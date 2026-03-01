@@ -12,6 +12,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare deploy directory
+        run: |
+          echo "Listing repository root"
+          ls -la
+          echo "Listing web-output"
+          ls -la web-output || true
+          echo "Copying web-output to ./public for deployment"
+          rm -rf public || true
+          mkdir -p public
+          cp -r web-output/* public/ || true
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -20,5 +31,5 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          deploy_dir: './web-output'
+          deploy_dir: './public'
           github_token: ${{ secrets.GITHUB_TOKEN }}
