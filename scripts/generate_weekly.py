@@ -24,9 +24,17 @@ def weekday_key(date_str):
 def load_parsed():
     items = []
     for p in glob.glob(os.path.join(PARSED_DIR,'*.json')):
+        # skip test files (do not expose test entries on public site)
+        if os.path.basename(p).startswith('test_'):
+            print('skipping test file',p)
+            continue
         try:
             with open(p,'r',encoding='utf-8') as f:
                 j = json.load(f)
+            # also skip entries explicitly marked exclude=true
+            if j.get('exclude'):
+                print('excluding entry marked exclude=true',p)
+                continue
             fields = j.get('fields',{})
             start = fields.get('record_datetime_guess_start')
             end = fields.get('record_datetime_guess_end')
