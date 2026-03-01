@@ -48,15 +48,33 @@ def load_parsed():
                 'location': fields.get('location',''),
                 'notes': fields.get('notes',''),
                 'image': os.path.join('media', os.path.basename(j.get('source_file',''))),
-                'weekday': weekday_key(fields.get('record_datetime_guess_start') or '')
+                'weekday': weekday_key(fields.get('record_datetime_guess_start') or ''),
+                'date_obj': parser.isoparse(start) if start else None
             })
         except Exception as e:
             print('skip',p,e)
-    # filter items with valid date and group by weekday
+    # compute current week range (Monday..Sunday)
+    today = datetime.now().date()
+    # find Monday
+    monday = today
+    while monday.weekday() != 0:
+        from datetime import timedelta
+        monday = monday - timedelta(days=1)
+    sunday = monday
+    while sunday.weekday() != 6:
+        from datetime import timedelta
+        sunday = sunday + timedelta(days=1)
+
+    # filter items that fall within this calendar week
     buckets = {i: [] for i in range(7)}
     for it in items:
-        if it.get('weekday') is not None:
-            buckets[it['weekday']].append(it)
+        dt = it.get('date_obj')
+        if not dt:
+            continue
+        ddate = dt.date()
+        if ddate >= monday and ddate <= sunday:
+            wd = dt.weekday()
+            buckets[wd].append(it)
     # ensure order Mon..Sun
     ordered = []
     for i in range(7):
