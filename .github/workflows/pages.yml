@@ -31,5 +31,8 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          deploy_dir: './public'
+          publish_dir: './public'
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          user_name: 'openclaw-bot'
+          user_email: 'noreply@github.com'
+          allow_empty_commit: true
