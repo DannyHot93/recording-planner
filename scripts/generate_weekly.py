@@ -48,6 +48,8 @@ def load_parsed():
             else:
                 date_iso = ''
                 time = ''
+            # only include items with a valid start date; others are ambiguous and will not be shown
+            date_obj = parser.isoparse(start) if start else None
             items.append({
                 'date': date_iso,
                 'time': time,
@@ -57,7 +59,7 @@ def load_parsed():
                 'notes': fields.get('notes',''),
                 'image': os.path.join('media', os.path.basename(j.get('source_file',''))),
                 'weekday': weekday_key(fields.get('record_datetime_guess_start') or ''),
-                'date_obj': parser.isoparse(start) if start else None
+                'date_obj': date_obj
             })
         except Exception as e:
             print('skip',p,e)
@@ -92,8 +94,14 @@ def load_parsed():
     return ordered
 
 week = load_parsed()
-# collect images
+# filter out days with no items and images collection will follow
 images = []
+for day, items in week:
+    # items already filtered to current week; ensure items with no date_obj are removed
+    filtered = [it for it in items if it.get('date_obj') is not None]
+    # replace day's items with filtered list
+    items.clear()
+    items.extend(filtered)
 for day, items in week:
     for it in items:
         if it.get('image'):
