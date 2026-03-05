@@ -53,7 +53,7 @@ open('data.json','w',encoding='utf-8').write(json.dumps(out,ensure_ascii=False,i
 # build html similar to previous styled template
 html = []
 html.append('<!doctype html>')
-html.append('<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>주간계획표 (전체)</title>')
+html.append('<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>주간계획표</title>')
 html.append('<style>')
 html.append('body{font-family:Arial,sans-serif;padding:18px;font-size:22px;line-height:1.35}')
 html.append('.two-column{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}')
@@ -71,7 +71,7 @@ html.append('</style>')
 html.append('</head><body>')
 html.append('<!-- build: '+now.isoformat()+' -->')
 html.append('<div id="main">')
-html.append('<h1>주간계획표 (전체)</h1>')
+html.append('<h1>주간계획표</h1>')
 html.append('<p id="generated">생성일: '+now.isoformat()+'</p>')
 html.append('<div class="two-column">')
 html.append('<div class="left-col">')
