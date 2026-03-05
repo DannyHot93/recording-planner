@@ -1,7 +1,0 @@
-{
-  "id": "test_friday",
-  "source_file": "web-output/media/test_friday.jpg",
-  "raw_text": "",
-  "fields": {"program":"프로그램C","producer":"PD_C","record_datetime_guess_start":"2026-03-06T14:00:00+09:00","record_datetime_guess_end":"2026-03-06T15:00:00+09:00","location":"스튜디오3","notes":"메모C"},
-  "created_at": "2026-03-01T04:00:00+09:00"
-}
