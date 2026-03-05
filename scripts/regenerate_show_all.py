@@ -60,9 +60,11 @@ html.append('.two-column{display:flex;gap:24px;align-items:flex-start;flex-wrap:
 html.append('.left-col{flex:0 0 40%;min-width:260px}')
 html.append('.right-col{flex:1 1 58%;min-width:360px}')
 html.append('.week-summary{background:#fff8e1;padding:18px;border-radius:10px;margin-bottom:18px}')
-html.append('.week-day{border:1px solid #eee;padding:10px;border-radius:8px;margin-bottom:8px;background:#fff}')
+html.append('.week-day{background:transparent;border:none;padding:6px;margin-bottom:6px}')
 html.append('.day-title-small{font-weight:900;display:inline-block;margin-bottom:6px;font-size:1.1rem;color:#222}')
-html.append('.day-title{font-weight:800;font-size:2.0rem;margin-bottom:10px}')
+html.append('.day-title{font-weight:800;font-size:2.0rem;margin-bottom:10px;display:flex;align-items:center;gap:12px}')
+html.append('.day-badge{display:inline-block;width:44px;height:44px;border-radius:8px;background:#ffd54f;color:#111;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1.2rem}')
+html.append('.day-title-text{font-size:1.4rem;font-weight:800}')
 html.append('table{border-collapse:collapse;width:100%;font-size:1.08rem}')
 html.append('th,td{border:1px solid #333;padding:12px}')
 html.append('th{background:#eee;font-weight:800;font-size:1.1rem}')
@@ -94,7 +96,7 @@ html.append('<div class="right-col">')
 for d in WEEKDAYS:
     items = [it for it in parsed if it['weekday']==d]
     html.append('<div class="day-section" id="day-'+d+'">')
-    html.append('<div class="day-title">'+d+'</div>')
+    html.append('<div class="day-title"><span class="day-badge">'+d+'<\/span><span class="day-title-text">'+d+'<\/span><\/div>')
     if not items:
         html.append('<div class="list">해당 요일에 예정된 녹화가 없습니다.</div>')
     else:

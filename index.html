@@ -6,9 +6,11 @@ body{font-family:Arial,sans-serif;padding:18px;font-size:22px;line-height:1.35}
 .left-col{flex:0 0 40%;min-width:260px}
 .right-col{flex:1 1 58%;min-width:360px}
 .week-summary{background:#fff8e1;padding:18px;border-radius:10px;margin-bottom:18px}
-.week-day{border:1px solid #eee;padding:10px;border-radius:8px;margin-bottom:8px;background:#fff}
+.week-day{background:transparent;border:none;padding:6px;margin-bottom:6px}
 .day-title-small{font-weight:900;display:inline-block;margin-bottom:6px;font-size:1.1rem;color:#222}
-.day-title{font-weight:800;font-size:2.0rem;margin-bottom:10px}
+.day-title{font-weight:800;font-size:2.0rem;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.day-badge{display:inline-block;width:44px;height:44px;border-radius:8px;background:#ffd54f;color:#111;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.day-title-text{font-size:1.4rem;font-weight:800}
 table{border-collapse:collapse;width:100%;font-size:1.08rem}
 th,td{border:1px solid #333;padding:12px}
 th{background:#eee;font-weight:800;font-size:1.1rem}
@@ -17,10 +19,10 @@ th{background:#eee;font-weight:800;font-size:1.1rem}
 @media(max-width:800px){ .left-col{flex-basis:100%} .right-col{flex-basis:100%} body{font-size:18px} }
 </style>
 </head><body>
-<!-- build: 2026-03-05T13:28:33.831059+09:00 -->
+<!-- build: 2026-03-05T13:33:02.985930+09:00 -->
 <div id="main">
 <h1>주간계획표</h1>
-<p id="generated">생성일: 2026-03-05T13:28:33.831059+09:00</p>
+<p id="generated">생성일: 2026-03-05T13:33:02.985930+09:00</p>
 <div class="two-column">
 <div class="left-col">
 <div class="week-summary"><h2 class="day-title">이번 주 일정 요약</h2>
@@ -54,7 +56,7 @@ th{background:#eee;font-weight:800;font-size:1.1rem}
 </div></div>
 <div class="right-col">
 <div class="day-section" id="day-월">
-<div class="day-title">월</div>
+<div class="day-title"><span class="day-badge">월<\/span><span class="day-title-text">월<\/span><\/div>
 <div class="list">
 <table><tr><th>날짜</th><th>시간</th><th>프로그램</th><th>PD</th><th>장소</th><th>메모</th></tr>
 <tr class="other-week-row" data-id="충북_시사토론_창_2026-03-09_15:40"><td>2026-03-09</td><td>15:40</td><td>충북 시사토론 창</td><td>설경철</td><td>4층 뉴스룸</td><td>3월 통합돌봄 제도 시행
@@ -63,7 +65,7 @@ th{background:#eee;font-weight:800;font-size:1.1rem}
 </div>
 </div>
 <div class="day-section" id="day-화">
-<div class="day-title">화</div>
+<div class="day-title"><span class="day-badge">화<\/span><span class="day-title-text">화<\/span><\/div>
 <div class="list">
 <table><tr><th>날짜</th><th>시간</th><th>프로그램</th><th>PD</th><th>장소</th><th>메모</th></tr>
 <tr class="this-week-row" data-id="프라임인터뷰_2026-03-03_16:00"><td>2026-03-03</td><td>16:00</td><td>프라임인터뷰</td><td>김영수</td><td>4층 스튜디오</td><td>음성군 청년마을 이야기 대표</td></tr>
@@ -73,11 +75,11 @@ th{background:#eee;font-weight:800;font-size:1.1rem}
 </div>
 </div>
 <div class="day-section" id="day-수">
-<div class="day-title">수</div>
+<div class="day-title"><span class="day-badge">수<\/span><span class="day-title-text">수<\/span><\/div>
 <div class="list">해당 요일에 예정된 녹화가 없습니다.</div>
 </div>
 <div class="day-section" id="day-목">
-<div class="day-title">목</div>
+<div class="day-title"><span class="day-badge">목<\/span><span class="day-title-text">목<\/span><\/div>
 <div class="list">
 <table><tr><th>날짜</th><th>시간</th><th>프로그램</th><th>PD</th><th>장소</th><th>메모</th></tr>
 <tr class="this-week-row" data-id="스토리지_정책_발표_알림_2026-03-05_14:00"><td>2026-03-05</td><td>14:00</td><td>스토리지 정책 발표 알림</td><td>기술국장 오홍택</td><td>청주연주소 6층 대회의실</td><td>스튜리지 정책 발표 — 대상: 영상편집 및 스토리지 사용자</td></tr>
@@ -85,7 +87,7 @@ th{background:#eee;font-weight:800;font-size:1.1rem}
 </div>
 </div>
 <div class="day-section" id="day-금">
-<div class="day-title">금</div>
+<div class="day-title"><span class="day-badge">금<\/span><span class="day-title-text">금<\/span><\/div>
 <div class="list">
 <table><tr><th>날짜</th><th>시간</th><th>프로그램</th><th>PD</th><th>장소</th><th>메모</th></tr>
 <tr class="this-week-row" data-id="충북_시사토론_창_2026-03-06_09:45"><td>2026-03-06</td><td>09:45</td><td>충북 시사토론 창</td><td></td><td>4층 뉴스룸</td><td>녹화내용: 쓰레기 대책은? 특기사항: 패널 4명 출연 (좌 2명, 우 2명)</td></tr>
@@ -93,11 +95,11 @@ th{background:#eee;font-weight:800;font-size:1.1rem}
 </div>
 </div>
 <div class="day-section" id="day-토">
-<div class="day-title">토</div>
+<div class="day-title"><span class="day-badge">토<\/span><span class="day-title-text">토<\/span><\/div>
 <div class="list">해당 요일에 예정된 녹화가 없습니다.</div>
 </div>
 <div class="day-section" id="day-일">
-<div class="day-title">일</div>
+<div class="day-title"><span class="day-badge">일<\/span><span class="day-title-text">일<\/span><\/div>
 <div class="list">해당 요일에 예정된 녹화가 없습니다.</div>
 </div>
 </div>
