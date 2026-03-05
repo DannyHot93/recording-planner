@@ -66,7 +66,7 @@ html.append('.day-title{font-weight:800;font-size:2.0rem;margin-bottom:10px;disp
 html.append('.day-badge{display:inline-block;width:44px;height:44px;border-radius:8px;background:#ffd54f;color:#111;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1.2rem}')
 html.append('.day-title-text{font-size:1.4rem;font-weight:800}')
 html.append('table{border-collapse:collapse;width:100%;font-size:1.08rem}')
-html.append('th,td{border:1px solid #333;padding:12px}')
+html.append('th,td{border:1px solid #333;padding:10px;word-break:break-word;white-space:normal}')
 html.append('th{background:#eee;font-weight:800;font-size:1.1rem}')
 html.append('.this-week-row{background:#e8f6ff}')
 html.append('.other-week-row{background:transparent;color:#444}')
