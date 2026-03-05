@@ -60,6 +60,8 @@ html.append('.two-column{display:flex;gap:24px;align-items:flex-start;flex-wrap:
 html.append('.left-col{flex:0 0 40%;min-width:260px}')
 html.append('.right-col{flex:1 1 58%;min-width:360px}')
 html.append('.week-summary{background:#fff8e1;padding:18px;border-radius:10px;margin-bottom:18px}')
+html.append('.week-day{border:1px solid #eee;padding:10px;border-radius:8px;margin-bottom:8px;background:#fff}')
+html.append('.day-title-small{font-weight:900;display:inline-block;margin-bottom:6px;font-size:1.1rem;color:#222}')
 html.append('.day-title{font-weight:800;font-size:2.0rem;margin-bottom:10px}')
 html.append('table{border-collapse:collapse;width:100%;font-size:1.08rem}')
 html.append('th,td{border:1px solid #333;padding:12px}')
