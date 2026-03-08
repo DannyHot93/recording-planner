@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.recording-planner.process-inbound</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>/Users/daehyeon/.openclaw/workspace-recording-planner/scripts/process_inbound.py</string>
+  </array>
+  <key>WatchPaths</key>
+  <array>
+    <string>/Users/daehyeon/.openclaw/workspace-recording-planner/media/inbound</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/Users/daehyeon/.openclaw/workspace-recording-planner/logs/process_inbound.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/daehyeon/.openclaw/workspace-recording-planner/logs/process_inbound.err.log</string>
+</dict>
+</plist>
