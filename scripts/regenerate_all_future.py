@@ -50,8 +50,10 @@ monday = now
 while monday.weekday() != 0:
     monday -= timedelta(days=1)
 week_start = monday.replace(hour=0,minute=0,second=0,microsecond=0)
-week_end = week_start + timedelta(days=7)
-this_week = [it for it in parsed if week_start <= parser.isoparse(it['dt_iso']) < week_end]
+# include the whole Sunday by making week_end inclusive (end of Sunday)
+week_end = week_start + timedelta(days=7)  # this is next Monday 00:00
+# treat items <= week_end as part of this week so events on the following Monday are included
+this_week = [it for it in parsed if week_start <= parser.isoparse(it['dt_iso']) <= week_end]
 this_week_ids = set([it['id'] for it in this_week])
 
 out = {'generated_at': now.isoformat(), 'items': parsed, 'this_week': this_week}
@@ -72,7 +74,7 @@ html.append('.right-col{flex:1 1 58%;min-width:360px}')
 html.append('.week-summary{background:#fff8e1;padding:18px;border-radius:10px;margin-bottom:18px}')
 html.append('.day-title{font-weight:800;font-size:2.0rem;margin-bottom:10px}')
 html.append('table{border-collapse:collapse;width:100%;font-size:1.08rem}')
-html.append('th,td{border:1px solid #333;padding:12px}')
+html.append('th,td{border:1px solid #333;padding:12px;vertical-align:top;word-break:break-word;white-space:pre-wrap;max-width:360px}')
 html.append('th{background:#eee;font-weight:800;font-size:1.1rem}')
 html.append('.this-week-row{background:#e8f6ff}')
 html.append('.other-week-row{background:transparent;color:#444}')
@@ -110,9 +112,16 @@ for d in WEEKDAYS:
     else:
         html.append('<div class="list">')
         html.append('<table><tr><th>날짜</th><th>시간</th><th>프로그램</th><th>PD</th><th>장소</th><th>메모</th></tr>')
+        import html as _html
         for it in items:
             cls = 'this-week-row' if it['id'] in this_week_ids else 'other-week-row'
-            html.append('<tr class="'+cls+'" data-id="'+it['id']+'"><td>'+it['date']+'</td><td>'+it['time']+'</td><td>'+it['program']+'</td><td>'+it.get('producer','')+'</td><td>'+it.get('location','')+'</td><td>'+it.get('notes','')+'</td></tr>')
+            notes = _html.escape(it.get('notes','') or '')
+            # preserve newlines as <br>
+            notes = notes.replace('\n','<br>')
+            program = _html.escape(it.get('program','') or '')
+            producer = _html.escape(it.get('producer','') or '')
+            location = _html.escape(it.get('location','') or '')
+            html.append('<tr class="'+cls+'" data-id="'+it['id']+'"><td>'+_html.escape(it.get('date',''))+'</td><td>'+_html.escape(it.get('time',''))+'</td><td>'+program+'</td><td>'+producer+'</td><td>'+location+'</td><td>'+notes+'</td></tr>')
         html.append('</table>')
         html.append('</div>')
     html.append('</div>')
