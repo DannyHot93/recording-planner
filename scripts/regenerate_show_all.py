@@ -102,9 +102,15 @@ for d in WEEKDAYS:
     else:
         html.append('<div class="list">')
         html.append('<table><tr><th>날짜</th><th>시간</th><th>프로그램</th><th>PD</th><th>장소</th><th>메모</th></tr>')
+        import html as _html
         for it in items:
             cls = 'this-week-row' if it['id'] in this_week_ids else 'other-week-row'
-            html.append('<tr class="'+cls+'" data-id="'+it['id']+'"><td>'+it.get('date','')+'</td><td>'+it.get('time','')+'</td><td>'+it.get('program','')+'</td><td>'+it.get('producer','')+'</td><td>'+it.get('location','')+'</td><td>'+it.get('notes','')+'</td></tr>')
+            notes = _html.escape(it.get('notes','') or '')
+            notes = notes.replace('\n','<br>')
+            program = _html.escape(it.get('program','') or '')
+            producer = _html.escape(it.get('producer','') or '')
+            location = _html.escape(it.get('location','') or '')
+            html.append('<tr class="'+cls+'" data-id="'+it['id']+'"><td>'+_html.escape(it.get('date',''))+'</td><td>'+_html.escape(it.get('time',''))+'</td><td>'+program+'</td><td>'+producer+'</td><td>'+location+'</td><td>'+notes+'</td></tr>')
         html.append('</table>')
         html.append('</div>')
     html.append('</div>')
