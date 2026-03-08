@@ -131,6 +131,9 @@ def main():
                 txt = try_pytesseract(dest)
             if not txt:
                 txt = ''
+            # sanitize OCR text: remove HTML-like tags (e.g. <span>, </div>) that sometimes appear from scans
+            import re
+            txt = re.sub(r'<[^>]+>', '', txt)
             dates = extract_dates(txt)
             entries = make_parsed_entry(basename, txt, dates)
             for e in entries:
