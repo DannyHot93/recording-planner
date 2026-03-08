@@ -106,7 +106,7 @@ html.append('<div class="right-col">')
 for d in WEEKDAYS:
     items = [it for it in parsed if it['weekday']==d]
     html.append('<div class="day-section" id="day-'+d+'">')
-    html.append('<div class="day-title">'+d+'</div>')
+    html.append('<div class="day-title"><span class="day-badge">'+d+'</span></div>')
     if not items:
         html.append('<div class="list">해당 요일에 예정된 녹화가 없습니다.</div>')
     else:
