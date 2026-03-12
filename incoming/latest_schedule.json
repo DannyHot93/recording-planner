@@ -1,8 +1,8 @@
 {
-  "program": "봄맞이 음악회",
-  "recording_date": "2026-03-18",
-  "meeting_time": "13:00",
+  "program": "테스트 공연 A",
+  "recording_date": "2026-03-19",
+  "meeting_time": "12:30",
   "recording_time": "14:00~16:00",
-  "location": "서울시청 대강당",
-  "notes": "우천시 실내 진행"
+  "location": "서울 테스트홀 A",
+  "notes": "자동 감시 테스트"
 }
