@@ -11,30 +11,25 @@
       background: #f4f6f8;
       color: #111;
     }
-
     h1 {
       margin-bottom: 6px;
     }
-
     h2 {
       margin-top: 36px;
       margin-bottom: 12px;
       font-size: 22px;
     }
-
     .meta {
       color: #666;
       margin-bottom: 20px;
       font-size: 14px;
       line-height: 1.5;
     }
-
     .week-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 14px;
     }
-
     .day-cell {
       background: white;
       border-radius: 16px;
@@ -43,17 +38,14 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       border: 2px solid transparent;
     }
-
     .today {
       border-color: #2563eb;
       box-shadow: 0 4px 16px rgba(37, 99, 235, 0.18);
       background: #eef5ff;
     }
-
     .weekend {
       background: #fcfcfd;
     }
-
     .day-header {
       display: flex;
       justify-content: space-between;
@@ -62,17 +54,14 @@
       padding-bottom: 8px;
       border-bottom: 1px solid #ececec;
     }
-
     .weekday {
       font-size: 18px;
       font-weight: 700;
     }
-
     .date {
       font-size: 14px;
       color: #666;
     }
-
     .schedule-card {
       background: #f8fafc;
       border-radius: 12px;
@@ -80,13 +69,11 @@
       margin-bottom: 10px;
       border: 1px solid #e5e7eb;
     }
-
     .program {
       font-weight: 700;
       font-size: 15px;
       margin-bottom: 6px;
     }
-
     .time, .location, .notes {
       font-size: 13px;
       margin-bottom: 4px;
@@ -94,13 +81,11 @@
       line-height: 1.4;
       word-break: break-word;
     }
-
     .empty {
       font-size: 13px;
       color: #999;
       padding: 8px 0;
     }
-
     .list-wrap {
       background: white;
       border-radius: 16px;
@@ -108,13 +93,11 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       overflow-x: auto;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       min-width: 780px;
     }
-
     th, td {
       padding: 12px 10px;
       border-bottom: 1px solid #e8e8e8;
@@ -122,17 +105,14 @@
       vertical-align: top;
       font-size: 14px;
     }
-
     th {
       background: #fafafa;
     }
-
     @media (max-width: 1200px) {
       .week-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
-
     @media (max-width: 700px) {
       .week-grid {
         grid-template-columns: 1fr;
@@ -144,7 +124,7 @@
   <h1>주간 녹화 계획표</h1>
   <div class="meta">
     이번 주: 2026-03-09 ~ 2026-03-15<br>
-    마지막 업데이트: 2026-03-12 18:04:46
+    마지막 업데이트: 2026-03-12 18:15:30
   </div>
 
   <h2>이번 주 일정</h2>
@@ -199,7 +179,6 @@
             
             <div class="schedule-card">
               <div class="program">블랙홀 청주콘서트</div>
-              <div class="time">집합: -</div>
               <div class="time">녹화: -</div>
               <div class="location">장소: 공개홀, 로비</div>
               <div class="notes">비고: 협조사항: 영상디자인국 카메라 이동; 기술국 LED 영상 기자재 이동; 대관환경 조성 협조 요청</div>
@@ -237,7 +216,6 @@
         <tr>
           <th>녹화일</th>
           <th>프로그램</th>
-          <th>집합시간</th>
           <th>녹화시간</th>
           <th>장소</th>
           <th>비고</th>
@@ -247,26 +225,23 @@
         
         <tr>
           <td>2026-03-17</td>
-          <td>프라임인터뷰</td>
-          <td></td>
-          <td>16:00~17:00</td>
-          <td>4층 스튜디오</td>
-          <td>담당PD: 김영수; 녹화내용: 박상혁 교수(중원대학교 드론봇 군사학과); 방송일: 2026-03-28</td>
-        </tr>
-        
-        <tr>
-          <td>2026-03-17</td>
           <td>즐거운 오후</td>
-          <td></td>
           <td>14:05~16:00</td>
           <td>A스튜디오</td>
           <td>담당PD: 오규익; 녹화내용: 1부 손님온다; 2~4부 라이브 공연: 가수 문초희; 특이사항: 반주기 사용없음</td>
         </tr>
         
         <tr>
+          <td>2026-03-17</td>
+          <td>프라임인터뷰</td>
+          <td>16:00~17:00</td>
+          <td>4층 스튜디오</td>
+          <td>담당PD: 김영수; 녹화내용: 박상혁 교수(중원대학교 드론봇 군사학과); 방송일: 2026-03-28</td>
+        </tr>
+        
+        <tr>
           <td>2026-03-18</td>
           <td>봄맞이 음악회</td>
-          <td>13:00</td>
           <td>14:00~16:00</td>
           <td>서울시청 대강당</td>
           <td>우천시 실내 진행</td>
@@ -275,7 +250,6 @@
         <tr>
           <td>2026-03-19</td>
           <td>테스트 공연 A</td>
-          <td>12:30</td>
           <td>14:00~16:00</td>
           <td>서울 테스트홀 A</td>
           <td>자동 감시 테스트</td>
@@ -284,7 +258,6 @@
         <tr>
           <td>2026-03-25</td>
           <td>충북 시사토론 창</td>
-          <td></td>
           <td>14:00~15:10</td>
           <td>4층 뉴스룸</td>
           <td>담당PD: 설경철; 녹화내용: 3월 월간뉴스분석; 패널 4명 출연(좌 2명, 우 2명)</td>
@@ -293,7 +266,6 @@
         <tr>
           <td>2026-03-25</td>
           <td>충북 시사토론 창</td>
-          <td></td>
           <td>14:00~15:10</td>
           <td>4층 뉴스룸</td>
           <td>담당PD: 설경철; 녹화내용: 3월 월간뉴스분석; 패널 4명 출연(좌 2명, 우 2명)</td>

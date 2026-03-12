@@ -70,9 +70,9 @@ def normalize_text(value: str) -> str:
 
 def validate_item(raw: dict) -> dict:
     item = {
+        "action": normalize_text(raw.get("action", "")).lower(),
         "program": normalize_text(raw.get("program", "")),
         "recording_date": normalize_date(normalize_text(raw.get("recording_date", ""))),
-        "meeting_time": normalize_text(raw.get("meeting_time", "")),
         "recording_time": normalize_text(raw.get("recording_time", "")),
         "location": normalize_text(raw.get("location", "")),
         "notes": normalize_text(raw.get("notes", "")),
@@ -82,9 +82,8 @@ def validate_item(raw: dict) -> dict:
     meaningful = any([
         item["program"],
         item["recording_date"],
-        item["location"],
-        item["meeting_time"],
         item["recording_time"],
+        item["location"],
         item["notes"],
     ])
 
@@ -95,13 +94,9 @@ def validate_item(raw: dict) -> dict:
 
 
 def merge_items(old_item: dict, new_item: dict) -> dict:
-    """
-    새 값이 빈 문자열이 아니면 새 값으로 덮어쓰고,
-    새 값이 비어 있으면 기존 값을 유지.
-    """
     merged = dict(old_item)
 
-    for key in ["program", "recording_date", "meeting_time", "recording_time", "location", "notes"]:
+    for key in ["program", "recording_date", "recording_time", "location", "notes"]:
         new_value = new_item.get(key, "")
         old_value = old_item.get(key, "")
 
@@ -115,50 +110,36 @@ def merge_items(old_item: dict, new_item: dict) -> dict:
 
 
 def is_same_schedule(old_item: dict, new_item: dict) -> bool:
-    """
-    같은 일정인지 판별하는 개선 로직.
-
-    우선순위:
-    1) program + location 이 같으면 같은 일정 후보
-    2) 추가로 시간이 일부라도 맞으면 더 강하게 같은 일정으로 판단
-    3) 날짜 수정 요청에도 기존 일정으로 인식할 수 있도록 recording_date는
-       동일 판별의 필수 조건으로 사용하지 않음
-    """
     old_program = old_item.get("program", "").strip()
     new_program = new_item.get("program", "").strip()
     old_location = old_item.get("location", "").strip()
     new_location = new_item.get("location", "").strip()
-
-    old_meeting = old_item.get("meeting_time", "").strip()
-    new_meeting = new_item.get("meeting_time", "").strip()
     old_recording = old_item.get("recording_time", "").strip()
     new_recording = new_item.get("recording_time", "").strip()
+    old_date = old_item.get("recording_date", "").strip()
+    new_date = new_item.get("recording_date", "").strip()
 
-    # 프로그램명과 장소가 모두 있으면 이 둘을 가장 강한 기준으로 사용
+    if new_item.get("action") == "delete":
+        if old_program and new_program and old_location and new_location and old_date and new_date:
+            return (
+                old_program == new_program and
+                old_location == new_location and
+                old_date == new_date
+            )
+        return False
+
     if old_program and new_program and old_location and new_location:
         if old_program == new_program and old_location == new_location:
             return True
 
-    # 프로그램명만 같고, 시간 일부라도 같으면 같은 일정으로 판단
     if old_program and new_program and old_program == new_program:
-        if old_meeting and new_meeting and old_meeting == new_meeting:
-            return True
         if old_recording and new_recording and old_recording == new_recording:
-            return True
-
-    # 장소만 같고 프로그램도 비슷하게 들어온 경우 대비
-    if old_location and new_location and old_location == new_location:
-        if old_program and new_program and old_program == new_program:
             return True
 
     return False
 
 
 def upsert_schedule(data: list, new_item: dict) -> list:
-    """
-    기존 일정 중 같은 일정이 있으면 병합해서 업데이트,
-    없으면 새로 추가.
-    """
     updated = []
     matched = False
 
@@ -171,8 +152,24 @@ def upsert_schedule(data: list, new_item: dict) -> list:
             updated.append(item)
 
     if not matched:
-        updated.append(new_item)
+        clean_item = dict(new_item)
+        clean_item.pop("action", None)
+        updated.append(clean_item)
 
+    return updated
+
+
+def delete_schedule(data: list, target_item: dict) -> list:
+    updated = []
+    deleted_count = 0
+
+    for item in data:
+        if is_same_schedule(item, target_item):
+            deleted_count += 1
+            continue
+        updated.append(item)
+
+    print(f"삭제된 일정 수: {deleted_count}")
     return updated
 
 
@@ -200,13 +197,13 @@ def cleanup_old(data: list) -> list:
 def sort_items(data: list) -> list:
     return sorted(
         data,
-        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("meeting_time", ""))
+        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("recording_time", ""))
     )
 
 
 def build_html(data: list):
     today = datetime.today().date()
-    start_of_week = today - timedelta(days=today.weekday())  # 월요일
+    start_of_week = today - timedelta(days=today.weekday())
     week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
     weekday_names = ["월", "화", "수", "목", "금", "토", "일"]
 
@@ -230,7 +227,6 @@ def build_html(data: list):
             cards.append(f"""
             <div class="schedule-card">
               <div class="program">{escape(item.get("program", ""))}</div>
-              <div class="time">집합: {escape(item.get("meeting_time", "")) or '-'}</div>
               <div class="time">녹화: {escape(item.get("recording_time", "")) or '-'}</div>
               <div class="location">장소: {escape(item.get("location", "")) or '-'}</div>
               <div class="notes">비고: {escape(item.get("notes", "")) or '-'}</div>
@@ -260,7 +256,7 @@ def build_html(data: list):
 
     other_items = sorted(
         other_items,
-        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("meeting_time", ""))
+        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("recording_time", ""))
     )
 
     other_rows = []
@@ -269,7 +265,6 @@ def build_html(data: list):
         <tr>
           <td>{escape(item.get("recording_date", ""))}</td>
           <td>{escape(item.get("program", ""))}</td>
-          <td>{escape(item.get("meeting_time", ""))}</td>
           <td>{escape(item.get("recording_time", ""))}</td>
           <td>{escape(item.get("location", ""))}</td>
           <td>{escape(item.get("notes", ""))}</td>
@@ -289,30 +284,25 @@ def build_html(data: list):
       background: #f4f6f8;
       color: #111;
     }}
-
     h1 {{
       margin-bottom: 6px;
     }}
-
     h2 {{
       margin-top: 36px;
       margin-bottom: 12px;
       font-size: 22px;
     }}
-
     .meta {{
       color: #666;
       margin-bottom: 20px;
       font-size: 14px;
       line-height: 1.5;
     }}
-
     .week-grid {{
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 14px;
     }}
-
     .day-cell {{
       background: white;
       border-radius: 16px;
@@ -321,17 +311,14 @@ def build_html(data: list):
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       border: 2px solid transparent;
     }}
-
     .today {{
       border-color: #2563eb;
       box-shadow: 0 4px 16px rgba(37, 99, 235, 0.18);
       background: #eef5ff;
     }}
-
     .weekend {{
       background: #fcfcfd;
     }}
-
     .day-header {{
       display: flex;
       justify-content: space-between;
@@ -340,17 +327,14 @@ def build_html(data: list):
       padding-bottom: 8px;
       border-bottom: 1px solid #ececec;
     }}
-
     .weekday {{
       font-size: 18px;
       font-weight: 700;
     }}
-
     .date {{
       font-size: 14px;
       color: #666;
     }}
-
     .schedule-card {{
       background: #f8fafc;
       border-radius: 12px;
@@ -358,13 +342,11 @@ def build_html(data: list):
       margin-bottom: 10px;
       border: 1px solid #e5e7eb;
     }}
-
     .program {{
       font-weight: 700;
       font-size: 15px;
       margin-bottom: 6px;
     }}
-
     .time, .location, .notes {{
       font-size: 13px;
       margin-bottom: 4px;
@@ -372,13 +354,11 @@ def build_html(data: list):
       line-height: 1.4;
       word-break: break-word;
     }}
-
     .empty {{
       font-size: 13px;
       color: #999;
       padding: 8px 0;
     }}
-
     .list-wrap {{
       background: white;
       border-radius: 16px;
@@ -386,13 +366,11 @@ def build_html(data: list):
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       overflow-x: auto;
     }}
-
     table {{
       width: 100%;
       border-collapse: collapse;
       min-width: 780px;
     }}
-
     th, td {{
       padding: 12px 10px;
       border-bottom: 1px solid #e8e8e8;
@@ -400,17 +378,14 @@ def build_html(data: list):
       vertical-align: top;
       font-size: 14px;
     }}
-
     th {{
       background: #fafafa;
     }}
-
     @media (max-width: 1200px) {{
       .week-grid {{
         grid-template-columns: repeat(2, 1fr);
       }}
     }}
-
     @media (max-width: 700px) {{
       .week-grid {{
         grid-template-columns: 1fr;
@@ -437,14 +412,13 @@ def build_html(data: list):
         <tr>
           <th>녹화일</th>
           <th>프로그램</th>
-          <th>집합시간</th>
           <th>녹화시간</th>
           <th>장소</th>
           <th>비고</th>
         </tr>
       </thead>
       <tbody>
-        {''.join(other_rows) if other_rows else '<tr><td colspan="6">다른 주 일정이 없습니다.</td></tr>'}
+        {''.join(other_rows) if other_rows else '<tr><td colspan="5">다른 주 일정이 없습니다.</td></tr>'}
       </tbody>
     </table>
   </div>
@@ -476,12 +450,23 @@ def main():
     new_item = validate_item(raw)
 
     data = load_json(SCHEDULE_PATH)
-    data = upsert_schedule(data, new_item)
-    data = cleanup_old(data)
-    data = sort_items(data)
 
-    save_json(SCHEDULE_PATH, data)
-    build_html(data)
+    if new_item.get("action") == "delete":
+        data = delete_schedule(data, new_item)
+    else:
+        data = upsert_schedule(data, new_item)
+
+    cleaned = []
+    for item in data:
+        new_clean = dict(item)
+        new_clean.pop("action", None)
+        cleaned.append(new_clean)
+
+    cleaned = cleanup_old(cleaned)
+    cleaned = sort_items(cleaned)
+
+    save_json(SCHEDULE_PATH, cleaned)
+    build_html(cleaned)
 
     ok, msg = git_push()
     print(msg)
