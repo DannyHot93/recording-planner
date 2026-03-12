@@ -1,8 +1,8 @@
 {
-  "program": "테스트 공연 A",
-  "recording_date": "2026-03-19",
-  "meeting_time": "12:30",
-  "recording_time": "14:00~16:00",
-  "location": "서울 테스트홀 A",
-  "notes": "자동 감시 테스트"
+ "program": "프라임인터뷰",
+ "recording_date": "2026-03-17",
+ "meeting_time": "",
+ "recording_time": "16:00~17:00",
+ "location": "4층 스튜디오",
+ "notes": "담당PD: 김영수; 녹화내용: 박상혁 교수(중원대학교 드론봇 군사학과); 방송일: 2026-03-28"
 }
