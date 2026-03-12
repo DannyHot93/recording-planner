@@ -68,6 +68,28 @@ def normalize_text(value: str) -> str:
     return str(value).strip()
 
 
+def get_weekday_kor(date_str: str) -> str:
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        names = ["월", "화", "수", "목", "금", "토", "일"]
+        return names[dt.weekday()]
+    except Exception:
+        return ""
+
+
+def get_week_sort_key(date_str: str):
+    """
+    다른 주 일정 정렬용:
+    연도-주차-요일(월=1~일=7) 순으로 정렬.
+    """
+    try:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        iso_year, iso_week, iso_weekday = dt.isocalendar()
+        return (iso_year, iso_week, iso_weekday)
+    except Exception:
+        return (9999, 99, 99)
+
+
 def validate_item(raw: dict) -> dict:
     item = {
         "action": normalize_text(raw.get("action", "")).lower(),
@@ -94,6 +116,10 @@ def validate_item(raw: dict) -> dict:
 
 
 def merge_items(old_item: dict, new_item: dict) -> dict:
+    """
+    같은 날짜/같은 장소/같은 프로그램인 동일 일정이 다시 들어왔을 때만 병합.
+    새 값이 빈 문자열이면 기존 값을 유지.
+    """
     merged = dict(old_item)
 
     for key in ["program", "recording_date", "recording_time", "location", "notes"]:
@@ -111,8 +137,9 @@ def merge_items(old_item: dict, new_item: dict) -> dict:
 
 def is_same_schedule(old_item: dict, new_item: dict) -> bool:
     """
-    추가/수정용 동일 일정 판별:
+    같은 일정 판별:
     program + location + recording_date 가 모두 같을 때만 같은 일정으로 본다.
+    날짜가 다르면 같은 프로그램이어도 다른 일정으로 유지한다.
     """
     old_program = old_item.get("program", "").strip()
     new_program = new_item.get("program", "").strip()
@@ -153,19 +180,15 @@ def should_delete(item: dict, target: dict) -> bool:
     if item_program != target_program:
         return False
 
-    # program만 있으면 같은 이름 전부 삭제
     if not target_date and not target_location:
         return True
 
-    # program + date + location
     if target_date and target_location:
         return item_date == target_date and item_location == target_location
 
-    # program + date
     if target_date and not target_location:
         return item_date == target_date
 
-    # program + location
     if target_location and not target_date:
         return item_location == target_location
 
@@ -230,7 +253,7 @@ def cleanup_old(data: list) -> list:
 def sort_items(data: list) -> list:
     return sorted(
         data,
-        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("recording_time", ""))
+        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("recording_time", ""), x.get("program", ""))
     )
 
 
@@ -250,6 +273,7 @@ def build_html(data: list):
         else:
             other_items.append(item)
 
+    # 이번 주 일정: 날짜 안에서는 시간순, 그 다음 프로그램명
     for key in grouped_this_week:
         grouped_this_week[key] = sorted(
             grouped_this_week[key],
@@ -293,16 +317,26 @@ def build_html(data: list):
         </div>
         """)
 
+    # 다른 주 일정:
+    # 연-주차 -> 요일(월~일) -> 시간 -> 프로그램명 순
     other_items = sorted(
         other_items,
-        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("recording_time", ""), x.get("program", ""))
+        key=lambda x: (
+            get_week_sort_key(x.get("recording_date", "")),
+            x.get("recording_time", ""),
+            x.get("program", "")
+        )
     )
 
     other_rows = []
     for item in other_items:
+        date_str = item.get("recording_date", "")
+        weekday_kor = get_weekday_kor(date_str)
+
         other_rows.append(f"""
         <tr>
-          <td>{escape(item.get("recording_date", ""))}</td>
+          <td>{escape(date_str)}</td>
+          <td>{escape(weekday_kor)}</td>
           <td>{escape(item.get("program", ""))}</td>
           <td>{escape(item.get("recording_time", ""))}</td>
           <td>{escape(item.get("location", ""))}</td>
@@ -408,7 +442,7 @@ def build_html(data: list):
     table {{
       width: 100%;
       border-collapse: collapse;
-      min-width: 780px;
+      min-width: 860px;
     }}
     th, td {{
       padding: 12px 10px;
@@ -450,6 +484,7 @@ def build_html(data: list):
       <thead>
         <tr>
           <th>녹화일</th>
+          <th>요일</th>
           <th>프로그램</th>
           <th>녹화시간</th>
           <th>장소</th>
@@ -457,7 +492,7 @@ def build_html(data: list):
         </tr>
       </thead>
       <tbody>
-        {''.join(other_rows) if other_rows else '<tr><td colspan="5">다른 주 일정이 없습니다.</td></tr>'}
+        {''.join(other_rows) if other_rows else '<tr><td colspan="6">다른 주 일정이 없습니다.</td></tr>'}
       </tbody>
     </table>
   </div>
