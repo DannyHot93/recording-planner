@@ -33,7 +33,8 @@ def normalize_date(value: str) -> str:
         return ""
 
     value = value.strip()
-    value = value.replace(".", "-").replace("/", "-").replace("년", "-").replace("월", "-").replace("일", "")
+    value = value.replace(".", "-").replace("/", "-")
+    value = value.replace("년", "-").replace("월", "-").replace("일", "")
     value = value.replace(" ", "")
 
     candidates = [
@@ -130,14 +131,74 @@ def cleanup_old(data: list) -> list:
 
 
 def sort_items(data: list) -> list:
-    return sorted(data, key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("meeting_time", "")))
+    return sorted(
+        data,
+        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("meeting_time", ""))
+    )
 
 
 def build_html(data: list):
-    rows = []
+    today = datetime.today().date()
+    start_of_week = today - timedelta(days=today.weekday())  # 월요일
+    week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
+    weekday_names = ["월", "화", "수", "목", "금", "토", "일"]
 
-    for item in sort_items(data):
-        rows.append(f"""
+    grouped_this_week = {d.strftime("%Y-%m-%d"): [] for d in week_dates}
+    other_items = []
+
+    for item in data:
+        rd = item.get("recording_date", "")
+        if rd in grouped_this_week:
+            grouped_this_week[rd].append(item)
+        else:
+            other_items.append(item)
+
+    day_cells = []
+    for i, d in enumerate(week_dates):
+        d_str = d.strftime("%Y-%m-%d")
+        items = grouped_this_week.get(d_str, [])
+
+        cards = []
+        for item in items:
+            cards.append(f"""
+            <div class="schedule-card">
+              <div class="program">{escape(item.get("program", ""))}</div>
+              <div class="time">집합: {escape(item.get("meeting_time", "")) or '-'}</div>
+              <div class="time">녹화: {escape(item.get("recording_time", "")) or '-'}</div>
+              <div class="location">장소: {escape(item.get("location", "")) or '-'}</div>
+              <div class="notes">비고: {escape(item.get("notes", "")) or '-'}</div>
+            </div>
+            """)
+
+        is_today = d == today
+        is_weekend = i >= 5
+
+        cell_class = "day-cell"
+        if is_today:
+            cell_class += " today"
+        if is_weekend:
+            cell_class += " weekend"
+
+        day_cells.append(f"""
+        <div class="{cell_class}">
+          <div class="day-header">
+            <div class="weekday">{weekday_names[i]}</div>
+            <div class="date">{d.strftime("%m/%d")}</div>
+          </div>
+          <div class="day-body">
+            {''.join(cards) if cards else '<div class="empty">일정 없음</div>'}
+          </div>
+        </div>
+        """)
+
+    other_items = sorted(
+        other_items,
+        key=lambda x: (x.get("recording_date", "9999-99-99"), x.get("meeting_time", ""))
+    )
+
+    other_rows = []
+    for item in other_items:
+        other_rows.append(f"""
         <tr>
           <td>{escape(item.get("recording_date", ""))}</td>
           <td>{escape(item.get("program", ""))}</td>
@@ -158,40 +219,152 @@ def build_html(data: list):
     body {{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 24px;
-      background: #f6f7f9;
+      background: #f4f6f8;
       color: #111;
     }}
-    h1 {{ margin-bottom: 8px; }}
+
+    h1 {{
+      margin-bottom: 6px;
+    }}
+
+    h2 {{
+      margin-top: 36px;
+      margin-bottom: 12px;
+      font-size: 22px;
+    }}
+
     .meta {{
       color: #666;
       margin-bottom: 20px;
       font-size: 14px;
+      line-height: 1.5;
     }}
-    .wrap {{
-      background: #fff;
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+
+    .week-grid {{
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 14px;
+    }}
+
+    .day-cell {{
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 260px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border: 2px solid transparent;
+    }}
+
+    .today {{
+      border-color: #2563eb;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.18);
+      background: #eef5ff;
+    }}
+
+    .weekend {{
+      background: #fcfcfd;
+    }}
+
+    .day-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ececec;
+    }}
+
+    .weekday {{
+      font-size: 18px;
+      font-weight: 700;
+    }}
+
+    .date {{
+      font-size: 14px;
+      color: #666;
+    }}
+
+    .schedule-card {{
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+    }}
+
+    .program {{
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }}
+
+    .time, .location, .notes {{
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #333;
+      line-height: 1.4;
+      word-break: break-word;
+    }}
+
+    .empty {{
+      font-size: 13px;
+      color: #999;
+      padding: 8px 0;
+    }}
+
+    .list-wrap {{
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       overflow-x: auto;
     }}
+
     table {{
       width: 100%;
       border-collapse: collapse;
       min-width: 780px;
     }}
+
     th, td {{
       padding: 12px 10px;
       border-bottom: 1px solid #e8e8e8;
       text-align: left;
       vertical-align: top;
+      font-size: 14px;
     }}
-    th {{ background: #fafafa; }}
+
+    th {{
+      background: #fafafa;
+    }}
+
+    @media (max-width: 1200px) {{
+      .week-grid {{
+        grid-template-columns: repeat(2, 1fr);
+      }}
+    }}
+
+    @media (max-width: 700px) {{
+      .week-grid {{
+        grid-template-columns: 1fr;
+      }}
+    }}
   </style>
 </head>
 <body>
   <h1>주간 녹화 계획표</h1>
-  <div class="meta">마지막 업데이트: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</div>
-  <div class="wrap">
+  <div class="meta">
+    이번 주: {week_dates[0].strftime("%Y-%m-%d")} ~ {week_dates[-1].strftime("%Y-%m-%d")}<br>
+    마지막 업데이트: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+  </div>
+
+  <h2>이번 주 일정</h2>
+  <div class="week-grid">
+    {''.join(day_cells)}
+  </div>
+
+  <h2>다른 주 일정</h2>
+  <div class="list-wrap">
     <table>
       <thead>
         <tr>
@@ -204,7 +377,7 @@ def build_html(data: list):
         </tr>
       </thead>
       <tbody>
-        {''.join(rows) if rows else '<tr><td colspan="6">등록된 일정이 없습니다.</td></tr>'}
+        {''.join(other_rows) if other_rows else '<tr><td colspan="6">다른 주 일정이 없습니다.</td></tr>'}
       </tbody>
     </table>
   </div>
