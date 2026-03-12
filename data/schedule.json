@@ -1,21 +1,5 @@
 [
   {
-    "program": "성희롱대면교육",
-    "recording_date": "",
-    "recording_time": "",
-    "location": "",
-    "notes": "dates: 2026-03-19; 2026-03-20",
-    "created_at": "2026-03-12T18:40:35"
-  },
-  {
-    "program": "성희롱대면교육",
-    "recording_date": "",
-    "recording_time": "",
-    "location": "",
-    "notes": "dates: 2026-03-19; 2026-03-20",
-    "created_at": "2026-03-12T18:42:52"
-  },
-  {
     "program": "블랙홀 청주콘서트",
     "recording_date": "2026-03-13",
     "meeting_time": "",
@@ -43,28 +27,12 @@
     "created_at": "2026-03-12T16:46:46"
   },
   {
-    "program": "성희롱대면교육",
-    "recording_date": "2026-03-19",
-    "recording_time": "",
-    "location": "",
-    "notes": "",
-    "created_at": "2026-03-12T18:43:28"
-  },
-  {
     "program": "통섭의 광장",
     "recording_date": "2026-03-19",
     "recording_time": "19:00",
     "location": "공개홀",
     "notes": "",
     "created_at": "2026-03-12T19:50:30"
-  },
-  {
-    "program": "성희롱대면교육",
-    "recording_date": "2026-03-20",
-    "recording_time": "",
-    "location": "",
-    "notes": "",
-    "created_at": "2026-03-12T18:44:01"
   },
   {
     "program": "충북 시사토론 창",

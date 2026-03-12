@@ -94,10 +94,6 @@ def validate_item(raw: dict) -> dict:
 
 
 def merge_items(old_item: dict, new_item: dict) -> dict:
-    """
-    같은 날짜/같은 장소/같은 프로그램인 동일 일정이 다시 들어왔을 때만 병합.
-    새 값이 빈 문자열이면 기존 값을 유지.
-    """
     merged = dict(old_item)
 
     for key in ["program", "recording_date", "recording_time", "location", "notes"]:
@@ -115,9 +111,8 @@ def merge_items(old_item: dict, new_item: dict) -> dict:
 
 def is_same_schedule(old_item: dict, new_item: dict) -> bool:
     """
-    같은 일정 판별 기준:
+    추가/수정용 동일 일정 판별:
     program + location + recording_date 가 모두 같을 때만 같은 일정으로 본다.
-    즉 날짜가 다르면 같은 프로그램이어도 다른 일정으로 유지한다.
     """
     old_program = old_item.get("program", "").strip()
     new_program = new_item.get("program", "").strip()
@@ -136,11 +131,48 @@ def is_same_schedule(old_item: dict, new_item: dict) -> bool:
     return False
 
 
+def should_delete(item: dict, target: dict) -> bool:
+    """
+    삭제용 판별:
+    1) program만 있으면 같은 program 전부 삭제
+    2) program + date 있으면 그 날짜의 해당 program 삭제
+    3) program + location 있으면 그 장소의 해당 program 삭제
+    4) program + date + location 있으면 가장 좁게 삭제
+    """
+    item_program = item.get("program", "").strip()
+    item_date = item.get("recording_date", "").strip()
+    item_location = item.get("location", "").strip()
+
+    target_program = target.get("program", "").strip()
+    target_date = target.get("recording_date", "").strip()
+    target_location = target.get("location", "").strip()
+
+    if not target_program:
+        return False
+
+    if item_program != target_program:
+        return False
+
+    # program만 있으면 같은 이름 전부 삭제
+    if not target_date and not target_location:
+        return True
+
+    # program + date + location
+    if target_date and target_location:
+        return item_date == target_date and item_location == target_location
+
+    # program + date
+    if target_date and not target_location:
+        return item_date == target_date
+
+    # program + location
+    if target_location and not target_date:
+        return item_location == target_location
+
+    return False
+
+
 def upsert_schedule(data: list, new_item: dict) -> list:
-    """
-    같은 일정(program+location+recording_date)이 있으면 병합 업데이트,
-    없으면 새로 추가.
-    """
     updated = []
     matched = False
 
@@ -161,14 +193,11 @@ def upsert_schedule(data: list, new_item: dict) -> list:
 
 
 def delete_schedule(data: list, target_item: dict) -> list:
-    """
-    삭제도 같은 기준(program+location+recording_date)으로만 수행.
-    """
     updated = []
     deleted_count = 0
 
     for item in data:
-        if is_same_schedule(item, target_item):
+        if should_delete(item, target_item):
             deleted_count += 1
             continue
         updated.append(item)
@@ -221,7 +250,6 @@ def build_html(data: list):
         else:
             other_items.append(item)
 
-    # 날짜/시간 순으로 정렬
     for key in grouped_this_week:
         grouped_this_week[key] = sorted(
             grouped_this_week[key],
