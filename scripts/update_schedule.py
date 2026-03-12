@@ -94,19 +94,86 @@ def validate_item(raw: dict) -> dict:
     return item
 
 
-def remove_duplicates(data: list, new_item: dict) -> list:
-    result = []
-    for item in data:
-        same_key = (
-            item.get("program", "") == new_item.get("program", "")
-            and item.get("recording_date", "") == new_item.get("recording_date", "")
-            and item.get("location", "") == new_item.get("location", "")
-        )
-        if not same_key:
-            result.append(item)
+def merge_items(old_item: dict, new_item: dict) -> dict:
+    """
+    새 값이 빈 문자열이 아니면 새 값으로 덮어쓰고,
+    새 값이 비어 있으면 기존 값을 유지.
+    """
+    merged = dict(old_item)
 
-    result.append(new_item)
-    return result
+    for key in ["program", "recording_date", "meeting_time", "recording_time", "location", "notes"]:
+        new_value = new_item.get(key, "")
+        old_value = old_item.get(key, "")
+
+        if new_value != "":
+            merged[key] = new_value
+        else:
+            merged[key] = old_value
+
+    merged["created_at"] = datetime.now().isoformat(timespec="seconds")
+    return merged
+
+
+def is_same_schedule(old_item: dict, new_item: dict) -> bool:
+    """
+    같은 일정인지 판별하는 개선 로직.
+
+    우선순위:
+    1) program + location 이 같으면 같은 일정 후보
+    2) 추가로 시간이 일부라도 맞으면 더 강하게 같은 일정으로 판단
+    3) 날짜 수정 요청에도 기존 일정으로 인식할 수 있도록 recording_date는
+       동일 판별의 필수 조건으로 사용하지 않음
+    """
+    old_program = old_item.get("program", "").strip()
+    new_program = new_item.get("program", "").strip()
+    old_location = old_item.get("location", "").strip()
+    new_location = new_item.get("location", "").strip()
+
+    old_meeting = old_item.get("meeting_time", "").strip()
+    new_meeting = new_item.get("meeting_time", "").strip()
+    old_recording = old_item.get("recording_time", "").strip()
+    new_recording = new_item.get("recording_time", "").strip()
+
+    # 프로그램명과 장소가 모두 있으면 이 둘을 가장 강한 기준으로 사용
+    if old_program and new_program and old_location and new_location:
+        if old_program == new_program and old_location == new_location:
+            return True
+
+    # 프로그램명만 같고, 시간 일부라도 같으면 같은 일정으로 판단
+    if old_program and new_program and old_program == new_program:
+        if old_meeting and new_meeting and old_meeting == new_meeting:
+            return True
+        if old_recording and new_recording and old_recording == new_recording:
+            return True
+
+    # 장소만 같고 프로그램도 비슷하게 들어온 경우 대비
+    if old_location and new_location and old_location == new_location:
+        if old_program and new_program and old_program == new_program:
+            return True
+
+    return False
+
+
+def upsert_schedule(data: list, new_item: dict) -> list:
+    """
+    기존 일정 중 같은 일정이 있으면 병합해서 업데이트,
+    없으면 새로 추가.
+    """
+    updated = []
+    matched = False
+
+    for item in data:
+        if is_same_schedule(item, new_item):
+            merged = merge_items(item, new_item)
+            updated.append(merged)
+            matched = True
+        else:
+            updated.append(item)
+
+    if not matched:
+        updated.append(new_item)
+
+    return updated
 
 
 def cleanup_old(data: list) -> list:
@@ -409,7 +476,7 @@ def main():
     new_item = validate_item(raw)
 
     data = load_json(SCHEDULE_PATH)
-    data = remove_duplicates(data, new_item)
+    data = upsert_schedule(data, new_item)
     data = cleanup_old(data)
     data = sort_items(data)
 
