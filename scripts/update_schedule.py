@@ -78,10 +78,6 @@ def get_weekday_kor(date_str: str) -> str:
 
 
 def get_week_sort_key(date_str: str):
-    """
-    다른 주 일정 정렬용:
-    연도-주차-요일(월=1~일=7) 순으로 정렬.
-    """
     try:
         dt = datetime.strptime(date_str, "%Y-%m-%d")
         iso_year, iso_week, iso_weekday = dt.isocalendar()
@@ -116,10 +112,6 @@ def validate_item(raw: dict) -> dict:
 
 
 def merge_items(old_item: dict, new_item: dict) -> dict:
-    """
-    같은 날짜/같은 장소/같은 프로그램인 동일 일정이 다시 들어왔을 때만 병합.
-    새 값이 빈 문자열이면 기존 값을 유지.
-    """
     merged = dict(old_item)
 
     for key in ["program", "recording_date", "recording_time", "location", "notes"]:
@@ -136,11 +128,6 @@ def merge_items(old_item: dict, new_item: dict) -> dict:
 
 
 def is_same_schedule(old_item: dict, new_item: dict) -> bool:
-    """
-    같은 일정 판별:
-    program + location + recording_date 가 모두 같을 때만 같은 일정으로 본다.
-    날짜가 다르면 같은 프로그램이어도 다른 일정으로 유지한다.
-    """
     old_program = old_item.get("program", "").strip()
     new_program = new_item.get("program", "").strip()
     old_location = old_item.get("location", "").strip()
@@ -159,13 +146,6 @@ def is_same_schedule(old_item: dict, new_item: dict) -> bool:
 
 
 def should_delete(item: dict, target: dict) -> bool:
-    """
-    삭제용 판별:
-    1) program만 있으면 같은 program 전부 삭제
-    2) program + date 있으면 그 날짜의 해당 program 삭제
-    3) program + location 있으면 그 장소의 해당 program 삭제
-    4) program + date + location 있으면 가장 좁게 삭제
-    """
     item_program = item.get("program", "").strip()
     item_date = item.get("recording_date", "").strip()
     item_location = item.get("location", "").strip()
@@ -273,7 +253,6 @@ def build_html(data: list):
         else:
             other_items.append(item)
 
-    # 이번 주 일정: 날짜 안에서는 시간순, 그 다음 프로그램명
     for key in grouped_this_week:
         grouped_this_week[key] = sorted(
             grouped_this_week[key],
@@ -317,8 +296,6 @@ def build_html(data: list):
         </div>
         """)
 
-    # 다른 주 일정:
-    # 연-주차 -> 요일(월~일) -> 시간 -> 프로그램명 순
     other_items = sorted(
         other_items,
         key=lambda x: (
@@ -506,10 +483,32 @@ def build_html(data: list):
 
 def git_push():
     try:
+        # 원격 최신 상태 먼저 반영
+        subprocess.run(["git", "pull", "--no-rebase", "origin", "main"], cwd=BASE_DIR, check=True)
+
+        # 변경사항 스테이징
         subprocess.run(["git", "add", "."], cwd=BASE_DIR, check=True)
-        subprocess.run(["git", "commit", "-m", "Update schedule"], cwd=BASE_DIR, check=False)
+
+        # 커밋 시도 (변경 없으면 실패해도 계속 진행)
+        commit_result = subprocess.run(
+            ["git", "commit", "-m", "Update schedule"],
+            cwd=BASE_DIR,
+            check=False,
+            capture_output=True,
+            text=True
+        )
+
+        # 커밋할 게 없는 경우 처리
+        combined_output = (commit_result.stdout or "") + (commit_result.stderr or "")
+        nothing_to_commit = "nothing to commit" in combined_output.lower()
+
+        # push
         subprocess.run(["git", "push", "origin", "main"], cwd=BASE_DIR, check=True)
+
+        if nothing_to_commit:
+            return True, "변경 없음, git push 확인 완료"
         return True, "git push 성공"
+
     except Exception as e:
         return False, f"git push 실패: {e}"
 
