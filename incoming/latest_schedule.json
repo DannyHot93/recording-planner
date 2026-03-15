@@ -1,8 +1,8 @@
 {
-  "action": "delete",
-  "program": "뉴스데스크",
-  "recording_date": "",
-  "recording_time": "",
-  "location": "뉴스센터",
-  "notes": "오홍택 오승민"
+  "action": "create",
+  "program": "대한산업보건협회 건강상담",
+  "recording_date": "2026-03-05",
+  "recording_time": "15:30-16:30",
+  "location": "청주연주소 6층 경영국",
+  "notes": "건강상담, 혈압측정, 당뇨측정"
 }
