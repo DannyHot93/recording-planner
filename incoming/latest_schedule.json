@@ -1,8 +1,8 @@
 {
-  "action": "create",
-  "program": "대한산업보건협회 건강상담",
-  "recording_date": "2026-03-05",
-  "recording_time": "15:30-16:30",
-  "location": "청주연주소 6층 경영국",
-  "notes": "건강상담, 혈압측정, 당뇨측정"
+  "action": "delete",
+  "program": "충북 시사토론 창",
+  "recording_date": "2026-03-25",
+  "recording_time": "",
+  "location": "4층 뉴스룸",
+  "notes": ""
 }
