@@ -3,7 +3,6 @@ import sys
 import json
 import subprocess
 from datetime import datetime, timedelta
-from html import escape
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -66,24 +65,6 @@ def normalize_text(value: str) -> str:
     if not value:
         return ""
     return str(value).strip()
-
-
-def get_weekday_kor(date_str: str) -> str:
-    try:
-        dt = datetime.strptime(date_str, "%Y-%m-%d")
-        names = ["월", "화", "수", "목", "금", "토", "일"]
-        return names[dt.weekday()]
-    except Exception:
-        return ""
-
-
-def get_week_sort_key(date_str: str):
-    try:
-        dt = datetime.strptime(date_str, "%Y-%m-%d")
-        iso_year, iso_week, iso_weekday = dt.isocalendar()
-        return (iso_year, iso_week, iso_weekday)
-    except Exception:
-        return (9999, 99, 99)
 
 
 def validate_item(raw: dict) -> dict:
@@ -181,8 +162,7 @@ def upsert_schedule(data: list, new_item: dict) -> list:
 
     for item in data:
         if is_same_schedule(item, new_item):
-            merged = merge_items(item, new_item)
-            updated.append(merged)
+            updated.append(merge_items(item, new_item))
             matched = True
         else:
             updated.append(item)
@@ -238,93 +218,7 @@ def sort_items(data: list) -> list:
 
 
 def build_html(data: list):
-    today = datetime.today().date()
-    start_of_week = today - timedelta(days=today.weekday())
-    week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
-
-    grouped_this_week = {d.strftime("%Y-%m-%d"): [] for d in week_dates}
-    other_items = []
-
-    for item in data:
-        rd = item.get("recording_date", "")
-        if rd in grouped_this_week:
-            grouped_this_week[rd].append(item)
-        else:
-            other_items.append(item)
-
-    for key in grouped_this_week:
-        grouped_this_week[key] = sorted(
-            grouped_this_week[key],
-            key=lambda x: (x.get("recording_time", ""), x.get("program", ""))
-        )
-
-    day_cells = []
-    for i, d in enumerate(week_dates):
-        d_str = d.strftime("%Y-%m-%d")
-        items = grouped_this_week.get(d_str, [])
-
-        cards = []
-        for item in items:
-            cards.append(f"""
-            <div class="schedule-card">
-              <div class="program">{escape(item.get("program", ""))}</div>
-              <div class="time">녹화: {escape(item.get("recording_time", "")) or '-'}</div>
-              <div class="location">장소: {escape(item.get("location", "")) or '-'}</div>
-              <div class="notes">비고: {escape(item.get("notes", "")) or '-'}</div>
-            </div>
-            """)
-
-        # 일요일 입력 UI 추가 (index 6)
-        sunday_manual_ui = ""
-        if i == 6:
-            sunday_manual_ui = """
-            <div class="manual-duty-box">
-              <div class="manual-duty-title">뉴스데스크 근무자 입력</div>
-              <div class="manual-duty-fixed">업무: 뉴스데스크</div>
-              <input id="manual-duty-name" class="manual-duty-input" type="text" placeholder="근무자 이름 입력">
-              <button id="manual-duty-save" class="manual-duty-button">저장</button>
-              <div id="manual-duty-status" class="manual-duty-status"></div>
-              <div id="manual-duty-preview"></div>
-            </div>
-            """
-
-        day_cells.append(f"""
-        <div class="day-cell" data-date="{d_str}">
-          <div class="day-header">
-            <div class="weekday" data-weekday-index="{i}"></div>
-            <div class="date" data-date-index="{i}"></div>
-          </div>
-          <div class="day-body">
-            {''.join(cards) if cards else '<div class="empty">일정 없음</div>'}
-            {sunday_manual_ui}
-          </div>
-        </div>
-        """)
-
-    other_items = sorted(
-        other_items,
-        key=lambda x: (
-            get_week_sort_key(x.get("recording_date", "")),
-            x.get("recording_time", ""),
-            x.get("program", "")
-        )
-    )
-
-    other_rows = []
-    for item in other_items:
-        date_str = item.get("recording_date", "")
-        weekday_kor = get_weekday_kor(date_str)
-
-        other_rows.append(f"""
-        <tr>
-          <td>{escape(date_str)}</td>
-          <td>{escape(weekday_kor)}</td>
-          <td>{escape(item.get("program", ""))}</td>
-          <td>{escape(item.get("recording_time", ""))}</td>
-          <td>{escape(item.get("location", ""))}</td>
-          <td>{escape(item.get("notes", ""))}</td>
-        </tr>
-        """)
+    schedule_json = json.dumps(data, ensure_ascii=False)
 
     html = f"""<!doctype html>
 <html lang="ko">
@@ -517,9 +411,7 @@ def build_html(data: list):
   </div>
 
   <h2>이번 주 일정</h2>
-  <div class="week-grid">
-    {''.join(day_cells)}
-  </div>
+  <div class="week-grid" id="week-grid"></div>
 
   <h2>다른 주 일정</h2>
   <div class="list-wrap">
@@ -534,20 +426,19 @@ def build_html(data: list):
           <th>비고</th>
         </tr>
       </thead>
-      <tbody>
-        {''.join(other_rows) if other_rows else '<tr><td colspan="6">다른 주 일정이 없습니다.</td></tr>'}
-      </tbody>
+      <tbody id="other-schedule-body"></tbody>
     </table>
   </div>
 
   <script>
+    const SCHEDULE_DATA = {schedule_json};
+
     (function () {{
       const weekdayNames = ["월", "화", "수", "목", "금", "토", "일"];
       const weekdayNamesSundayFirst = ["일", "월", "화", "수", "목", "금", "토"];
-
-      const now = new Date();
       const pad = (n) => String(n).padStart(2, "0");
 
+      const now = new Date();
       const formatDate = (d) =>
         `${{d.getFullYear()}}-${{pad(d.getMonth() + 1)}}-${{pad(d.getDate())}}`;
 
@@ -566,33 +457,145 @@ def build_html(data: list):
       document.getElementById("today-text").textContent =
         `오늘 날짜: ${{formatDate(now)}} (${{weekdayNamesSundayFirst[now.getDay()]}})`;
 
-      const dateNodes = document.querySelectorAll("[data-date-index]");
-      const weekdayNodes = document.querySelectorAll("[data-weekday-index]");
-      const dayCells = document.querySelectorAll(".day-cell");
+      const weekGrid = document.getElementById("week-grid");
+      const otherBody = document.getElementById("other-schedule-body");
 
-      for (let i = 0; i < 7; i++) {{
-        const d = new Date(monday);
-        d.setDate(monday.getDate() + i);
+      function escapeHtml(str) {{
+        return String(str || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }}
 
-        if (weekdayNodes[i]) {{
-          weekdayNodes[i].textContent = weekdayNames[i];
-        }}
-
-        if (dateNodes[i]) {{
-          dateNodes[i].textContent = `${{pad(d.getMonth() + 1)}}/${{pad(d.getDate())}}`;
-        }}
-
-        if (dayCells[i]) {{
-          if (i >= 5) {{
-            dayCells[i].classList.add("weekend");
-          }}
-          if (formatDate(d) === formatDate(now)) {{
-            dayCells[i].classList.add("today");
-          }}
+      function getWeekdayKor(dateStr) {{
+        try {{
+          const d = new Date(dateStr + "T00:00:00");
+          const idx = d.getDay();
+          return ["일", "월", "화", "수", "목", "금", "토"][idx];
+        }} catch {{
+          return "";
         }}
       }}
 
-      // 일요일 뉴스데스크 근무자 입력 localStorage 저장
+      function getWeekSortKey(dateStr) {{
+        const d = new Date(dateStr + "T00:00:00");
+        if (isNaN(d)) return [9999, 99, 99];
+
+        const dayNum = d.getDay() === 0 ? 7 : d.getDay();
+        const thursday = new Date(d);
+        thursday.setDate(d.getDate() + (4 - dayNum));
+
+        const yearStart = new Date(thursday.getFullYear(), 0, 1);
+        const week = Math.ceil((((thursday - yearStart) / 86400000) + 1) / 7);
+        return [thursday.getFullYear(), week, dayNum];
+      }}
+
+      const weekDates = [];
+      for (let i = 0; i < 7; i++) {{
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        weekDates.push(d);
+      }}
+
+      const groupedThisWeek = {{}};
+      weekDates.forEach(d => groupedThisWeek[formatDate(d)] = []);
+
+      const otherItems = [];
+
+      (SCHEDULE_DATA || []).forEach(item => {{
+        const rd = item.recording_date || "";
+        if (groupedThisWeek[rd]) {{
+          groupedThisWeek[rd].push(item);
+        }} else {{
+          otherItems.push(item);
+        }}
+      }});
+
+      weekDates.forEach((d, i) => {{
+        const dateStr = formatDate(d);
+        const items = (groupedThisWeek[dateStr] || []).sort((a, b) => {{
+          const t1 = a.recording_time || "";
+          const t2 = b.recording_time || "";
+          if (t1 !== t2) return t1.localeCompare(t2);
+          return (a.program || "").localeCompare(b.program || "");
+        }});
+
+        const isToday = dateStr === formatDate(now);
+        const isWeekend = i >= 5;
+
+        const cards = items.length
+          ? items.map(item => `
+              <div class="schedule-card">
+                <div class="program">${{escapeHtml(item.program)}}</div>
+                <div class="time">녹화: ${{escapeHtml(item.recording_time || "-")}}</div>
+                <div class="location">장소: ${{escapeHtml(item.location || "-")}}</div>
+                <div class="notes">비고: ${{escapeHtml(item.notes || "-")}}</div>
+              </div>
+            `).join("")
+          : '<div class="empty">일정 없음</div>';
+
+        let sundayManual = "";
+        if (i === 6) {{
+          sundayManual = `
+            <div class="manual-duty-box">
+              <div class="manual-duty-title">뉴스데스크 근무자 입력</div>
+              <div class="manual-duty-fixed">업무: 뉴스데스크</div>
+              <input id="manual-duty-name" class="manual-duty-input" type="text" placeholder="근무자 이름 입력">
+              <button id="manual-duty-save" class="manual-duty-button">저장</button>
+              <div id="manual-duty-status" class="manual-duty-status"></div>
+              <div id="manual-duty-preview"></div>
+            </div>
+          `;
+        }}
+
+        const cell = document.createElement("div");
+        cell.className = "day-cell" + (isToday ? " today" : "") + (isWeekend ? " weekend" : "");
+        cell.innerHTML = `
+          <div class="day-header">
+            <div class="weekday">${{weekdayNames[i]}}</div>
+            <div class="date">${{pad(d.getMonth() + 1)}}/${{pad(d.getDate())}}</div>
+          </div>
+          <div class="day-body">
+            ${{cards}}
+            ${{sundayManual}}
+          </div>
+        `;
+        weekGrid.appendChild(cell);
+      }});
+
+      otherItems.sort((a, b) => {{
+        const k1 = getWeekSortKey(a.recording_date || "");
+        const k2 = getWeekSortKey(b.recording_date || "");
+
+        for (let i = 0; i < 3; i++) {{
+          if (k1[i] !== k2[i]) return k1[i] - k2[i];
+        }}
+
+        const t1 = a.recording_time || "";
+        const t2 = b.recording_time || "";
+        if (t1 !== t2) return t1.localeCompare(t2);
+
+        return (a.program || "").localeCompare(b.program || "");
+      }});
+
+      if (otherItems.length === 0) {{
+        otherBody.innerHTML = '<tr><td colspan="6">다른 주 일정이 없습니다.</td></tr>';
+      }} else {{
+        otherBody.innerHTML = otherItems.map(item => `
+          <tr>
+            <td>${{escapeHtml(item.recording_date || "")}}</td>
+            <td>${{escapeHtml(getWeekdayKor(item.recording_date || ""))}}</td>
+            <td>${{escapeHtml(item.program || "")}}</td>
+            <td>${{escapeHtml(item.recording_time || "")}}</td>
+            <td>${{escapeHtml(item.location || "")}}</td>
+            <td>${{escapeHtml(item.notes || "")}}</td>
+          </tr>
+        `).join("");
+      }}
+
+      // 일요일 localStorage 입력
       const sundayKey = `newsdesk-duty-${{formatDate(sunday)}}`;
       const nameInput = document.getElementById("manual-duty-name");
       const saveButton = document.getElementById("manual-duty-save");
@@ -612,15 +615,13 @@ def build_html(data: list):
             <div class="manual-duty-preview-title">수기 입력 일정</div>
             <div class="manual-duty-preview-line">업무: 뉴스데스크</div>
             <div class="manual-duty-preview-line">날짜: ${{formatDate(sunday)}} (일)</div>
-            <div class="manual-duty-preview-line">근무자: ${{name}}</div>
+            <div class="manual-duty-preview-line">근무자: ${{escapeHtml(name)}}</div>
           </div>
         `;
       }}
 
       const savedName = localStorage.getItem(sundayKey) || "";
-      if (nameInput) {{
-        nameInput.value = savedName;
-      }}
+      if (nameInput) nameInput.value = savedName;
       renderDutyPreview(savedName);
 
       if (saveButton) {{
@@ -628,19 +629,13 @@ def build_html(data: list):
           const value = (nameInput?.value || "").trim();
 
           if (!value) {{
-            if (statusEl) {{
-              statusEl.textContent = "근무자 이름을 입력해 주세요.";
-            }}
+            if (statusEl) statusEl.textContent = "근무자 이름을 입력해 주세요.";
             renderDutyPreview("");
             return;
           }}
 
           localStorage.setItem(sundayKey, value);
-
-          if (statusEl) {{
-            statusEl.textContent = "이 브라우저에 저장되었습니다.";
-          }}
-
+          if (statusEl) statusEl.textContent = "이 브라우저에 저장되었습니다.";
           renderDutyPreview(value);
         }});
       }}
