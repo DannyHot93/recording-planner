@@ -274,6 +274,20 @@ def build_html(data: list):
             </div>
             """)
 
+        # 일요일 입력 UI 추가 (index 6)
+        sunday_manual_ui = ""
+        if i == 6:
+            sunday_manual_ui = """
+            <div class="manual-duty-box">
+              <div class="manual-duty-title">뉴스데스크 근무자 입력</div>
+              <div class="manual-duty-fixed">업무: 뉴스데스크</div>
+              <input id="manual-duty-name" class="manual-duty-input" type="text" placeholder="근무자 이름 입력">
+              <button id="manual-duty-save" class="manual-duty-button">저장</button>
+              <div id="manual-duty-status" class="manual-duty-status"></div>
+              <div id="manual-duty-preview"></div>
+            </div>
+            """
+
         day_cells.append(f"""
         <div class="day-cell" data-date="{d_str}">
           <div class="day-header">
@@ -282,6 +296,7 @@ def build_html(data: list):
           </div>
           <div class="day-body">
             {''.join(cards) if cards else '<div class="empty">일정 없음</div>'}
+            {sunday_manual_ui}
           </div>
         </div>
         """)
@@ -399,6 +414,67 @@ def build_html(data: list):
       color: #999;
       padding: 8px 0;
     }}
+    .manual-duty-box {{
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      background: #fffdf7;
+    }}
+    .manual-duty-title {{
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }}
+    .manual-duty-fixed {{
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: #444;
+    }}
+    .manual-duty-input {{
+      width: 100%;
+      box-sizing: border-box;
+      padding: 9px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 8px;
+      background: #fff;
+    }}
+    .manual-duty-button {{
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+    }}
+    .manual-duty-status {{
+      margin-top: 8px;
+      font-size: 12px;
+      color: #555;
+    }}
+    .manual-duty-preview-card {{
+      margin-top: 10px;
+      background: #eef6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 10px;
+    }}
+    .manual-duty-preview-title {{
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }}
+    .manual-duty-preview-line {{
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }}
     .list-wrap {{
       background: white;
       border-radius: 16px;
@@ -476,7 +552,7 @@ def build_html(data: list):
         `${{d.getFullYear()}}-${{pad(d.getMonth() + 1)}}-${{pad(d.getDate())}}`;
 
       const monday = new Date(now);
-      const dayOfWeek = now.getDay(); // 0=일, 1=월
+      const dayOfWeek = now.getDay();
       const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
       monday.setDate(now.getDate() + diffToMonday);
       monday.setHours(0, 0, 0, 0);
@@ -514,6 +590,59 @@ def build_html(data: list):
             dayCells[i].classList.add("today");
           }}
         }}
+      }}
+
+      // 일요일 뉴스데스크 근무자 입력 localStorage 저장
+      const sundayKey = `newsdesk-duty-${{formatDate(sunday)}}`;
+      const nameInput = document.getElementById("manual-duty-name");
+      const saveButton = document.getElementById("manual-duty-save");
+      const statusEl = document.getElementById("manual-duty-status");
+      const previewEl = document.getElementById("manual-duty-preview");
+
+      function renderDutyPreview(name) {{
+        if (!previewEl) return;
+
+        if (!name) {{
+          previewEl.innerHTML = "";
+          return;
+        }}
+
+        previewEl.innerHTML = `
+          <div class="manual-duty-preview-card">
+            <div class="manual-duty-preview-title">수기 입력 일정</div>
+            <div class="manual-duty-preview-line">업무: 뉴스데스크</div>
+            <div class="manual-duty-preview-line">날짜: ${{formatDate(sunday)}} (일)</div>
+            <div class="manual-duty-preview-line">근무자: ${{name}}</div>
+          </div>
+        `;
+      }}
+
+      const savedName = localStorage.getItem(sundayKey) || "";
+      if (nameInput) {{
+        nameInput.value = savedName;
+      }}
+      renderDutyPreview(savedName);
+
+      if (saveButton) {{
+        saveButton.addEventListener("click", function () {{
+          const value = (nameInput?.value || "").trim();
+
+          if (!value) {{
+            if (statusEl) {{
+              statusEl.textContent = "근무자 이름을 입력해 주세요.";
+            }}
+            renderDutyPreview("");
+            return;
+          }}
+
+          localStorage.setItem(sundayKey, value);
+
+          if (statusEl) {{
+            statusEl.textContent = "이 브라우저에 저장되었습니다.";
+          }}
+
+          renderDutyPreview(value);
+        }});
       }}
     }})();
   </script>
