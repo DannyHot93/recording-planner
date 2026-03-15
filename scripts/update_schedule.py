@@ -506,11 +506,20 @@ def build_html(data: list):
 
       (SCHEDULE_DATA || []).forEach(item => {{
         const rd = item.recording_date || "";
+        if (!rd) return;
+
         if (groupedThisWeek[rd]) {{
           groupedThisWeek[rd].push(item);
-        }} else {{
-          otherItems.push(item);
+          return;
         }}
+
+        // 이번 주 이전 날짜는 다른 주 일정에서도 숨김
+        if (rd < formatDate(monday)) {{
+          return;
+        }}
+
+        // 이번 주 이후 일정만 다른 주 일정에 표시
+        otherItems.push(item);
       }});
 
       weekDates.forEach((d, i) => {{
@@ -595,7 +604,6 @@ def build_html(data: list):
         `).join("");
       }}
 
-      // 일요일 localStorage 입력
       const sundayKey = `newsdesk-duty-${{formatDate(sunday)}}`;
       const nameInput = document.getElementById("manual-duty-name");
       const saveButton = document.getElementById("manual-duty-save");
