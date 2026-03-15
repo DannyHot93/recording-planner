@@ -1,8 +1,8 @@
 {
-  "action": "delete",
+  "action": "create",
   "program": "뉴스데스크",
   "recording_date": "",
   "recording_time": "",
-  "location": "",
-  "notes": "오홍택,오승민"
+  "location": "뉴스센터",
+  "notes": "오홍택, 오승민"
 }
