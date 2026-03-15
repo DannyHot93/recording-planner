@@ -241,7 +241,6 @@ def build_html(data: list):
     today = datetime.today().date()
     start_of_week = today - timedelta(days=today.weekday())
     week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
-    weekday_names = ["월", "화", "수", "목", "금", "토", "일"]
 
     grouped_this_week = {d.strftime("%Y-%m-%d"): [] for d in week_dates}
     other_items = []
@@ -275,20 +274,11 @@ def build_html(data: list):
             </div>
             """)
 
-        is_today = d == today
-        is_weekend = i >= 5
-
-        cell_class = "day-cell"
-        if is_today:
-            cell_class += " today"
-        if is_weekend:
-            cell_class += " weekend"
-
         day_cells.append(f"""
-        <div class="{cell_class}">
+        <div class="day-cell" data-date="{d_str}">
           <div class="day-header">
-            <div class="weekday">{weekday_names[i]}</div>
-            <div class="date">{d.strftime("%m/%d")}</div>
+            <div class="weekday" data-weekday-index="{i}"></div>
+            <div class="date" data-date-index="{i}"></div>
           </div>
           <div class="day-body">
             {''.join(cards) if cards else '<div class="empty">일정 없음</div>'}
@@ -361,12 +351,12 @@ def build_html(data: list):
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       border: 2px solid transparent;
     }}
-    .today {{
+    .day-cell.today {{
       border-color: #2563eb;
       box-shadow: 0 4px 16px rgba(37, 99, 235, 0.18);
       background: #eef5ff;
     }}
-    .weekend {{
+    .day-cell.weekend {{
       background: #fcfcfd;
     }}
     .day-header {{
@@ -446,8 +436,8 @@ def build_html(data: list):
 <body>
   <h1>주간 녹화 계획표</h1>
   <div class="meta">
-    이번 주: {week_dates[0].strftime("%Y-%m-%d")} ~ {week_dates[-1].strftime("%Y-%m-%d")}<br>
-    마지막 업데이트: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+    <div id="week-range"></div>
+    <div id="today-text"></div>
   </div>
 
   <h2>이번 주 일정</h2>
@@ -473,6 +463,60 @@ def build_html(data: list):
       </tbody>
     </table>
   </div>
+
+  <script>
+    (function () {{
+      const weekdayNames = ["월", "화", "수", "목", "금", "토", "일"];
+      const weekdayNamesSundayFirst = ["일", "월", "화", "수", "목", "금", "토"];
+
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+
+      const formatDate = (d) =>
+        `${{d.getFullYear()}}-${{pad(d.getMonth() + 1)}}-${{pad(d.getDate())}}`;
+
+      const monday = new Date(now);
+      const dayOfWeek = now.getDay(); // 0=일, 1=월
+      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      monday.setDate(now.getDate() + diffToMonday);
+      monday.setHours(0, 0, 0, 0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      document.getElementById("week-range").textContent =
+        `이번 주: ${{formatDate(monday)}} ~ ${{formatDate(sunday)}}`;
+
+      document.getElementById("today-text").textContent =
+        `오늘 날짜: ${{formatDate(now)}} (${{weekdayNamesSundayFirst[now.getDay()]}})`;
+
+      const dateNodes = document.querySelectorAll("[data-date-index]");
+      const weekdayNodes = document.querySelectorAll("[data-weekday-index]");
+      const dayCells = document.querySelectorAll(".day-cell");
+
+      for (let i = 0; i < 7; i++) {{
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+
+        if (weekdayNodes[i]) {{
+          weekdayNodes[i].textContent = weekdayNames[i];
+        }}
+
+        if (dateNodes[i]) {{
+          dateNodes[i].textContent = `${{pad(d.getMonth() + 1)}}/${{pad(d.getDate())}}`;
+        }}
+
+        if (dayCells[i]) {{
+          if (i >= 5) {{
+            dayCells[i].classList.add("weekend");
+          }}
+          if (formatDate(d) === formatDate(now)) {{
+            dayCells[i].classList.add("today");
+          }}
+        }}
+      }}
+    }})();
+  </script>
 </body>
 </html>
 """
@@ -483,13 +527,9 @@ def build_html(data: list):
 
 def git_push():
     try:
-        # 원격 최신 상태 먼저 반영
         subprocess.run(["git", "pull", "--no-rebase", "origin", "main"], cwd=BASE_DIR, check=True)
-
-        # 변경사항 스테이징
         subprocess.run(["git", "add", "."], cwd=BASE_DIR, check=True)
 
-        # 커밋 시도 (변경 없으면 실패해도 계속 진행)
         commit_result = subprocess.run(
             ["git", "commit", "-m", "Update schedule"],
             cwd=BASE_DIR,
@@ -498,11 +538,9 @@ def git_push():
             text=True
         )
 
-        # 커밋할 게 없는 경우 처리
         combined_output = (commit_result.stdout or "") + (commit_result.stderr or "")
         nothing_to_commit = "nothing to commit" in combined_output.lower()
 
-        # push
         subprocess.run(["git", "push", "origin", "main"], cwd=BASE_DIR, check=True)
 
         if nothing_to_commit:

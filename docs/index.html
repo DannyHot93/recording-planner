@@ -38,12 +38,12 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       border: 2px solid transparent;
     }
-    .today {
+    .day-cell.today {
       border-color: #2563eb;
       box-shadow: 0 4px 16px rgba(37, 99, 235, 0.18);
       background: #eef5ff;
     }
-    .weekend {
+    .day-cell.weekend {
       background: #fcfcfd;
     }
     .day-header {
@@ -123,57 +123,57 @@
 <body>
   <h1>주간 녹화 계획표</h1>
   <div class="meta">
-    이번 주: 2026-03-09 ~ 2026-03-15<br>
-    마지막 업데이트: 2026-03-15 11:14:25
+    <div id="week-range"></div>
+    <div id="today-text"></div>
   </div>
 
   <h2>이번 주 일정</h2>
   <div class="week-grid">
     
-        <div class="day-cell">
+        <div class="day-cell" data-date="2026-03-09">
           <div class="day-header">
-            <div class="weekday">월</div>
-            <div class="date">03/09</div>
+            <div class="weekday" data-weekday-index="0"></div>
+            <div class="date" data-date-index="0"></div>
           </div>
           <div class="day-body">
             <div class="empty">일정 없음</div>
           </div>
         </div>
         
-        <div class="day-cell">
+        <div class="day-cell" data-date="2026-03-10">
           <div class="day-header">
-            <div class="weekday">화</div>
-            <div class="date">03/10</div>
+            <div class="weekday" data-weekday-index="1"></div>
+            <div class="date" data-date-index="1"></div>
           </div>
           <div class="day-body">
             <div class="empty">일정 없음</div>
           </div>
         </div>
         
-        <div class="day-cell">
+        <div class="day-cell" data-date="2026-03-11">
           <div class="day-header">
-            <div class="weekday">수</div>
-            <div class="date">03/11</div>
+            <div class="weekday" data-weekday-index="2"></div>
+            <div class="date" data-date-index="2"></div>
           </div>
           <div class="day-body">
             <div class="empty">일정 없음</div>
           </div>
         </div>
         
-        <div class="day-cell">
+        <div class="day-cell" data-date="2026-03-12">
           <div class="day-header">
-            <div class="weekday">목</div>
-            <div class="date">03/12</div>
+            <div class="weekday" data-weekday-index="3"></div>
+            <div class="date" data-date-index="3"></div>
           </div>
           <div class="day-body">
             <div class="empty">일정 없음</div>
           </div>
         </div>
         
-        <div class="day-cell">
+        <div class="day-cell" data-date="2026-03-13">
           <div class="day-header">
-            <div class="weekday">금</div>
-            <div class="date">03/13</div>
+            <div class="weekday" data-weekday-index="4"></div>
+            <div class="date" data-date-index="4"></div>
           </div>
           <div class="day-body">
             
@@ -187,10 +187,10 @@
           </div>
         </div>
         
-        <div class="day-cell weekend">
+        <div class="day-cell" data-date="2026-03-14">
           <div class="day-header">
-            <div class="weekday">토</div>
-            <div class="date">03/14</div>
+            <div class="weekday" data-weekday-index="5"></div>
+            <div class="date" data-date-index="5"></div>
           </div>
           <div class="day-body">
             
@@ -204,12 +204,19 @@
           </div>
         </div>
         
-        <div class="day-cell today weekend">
+        <div class="day-cell" data-date="2026-03-15">
           <div class="day-header">
-            <div class="weekday">일</div>
-            <div class="date">03/15</div>
+            <div class="weekday" data-weekday-index="6"></div>
+            <div class="date" data-date-index="6"></div>
           </div>
           <div class="day-body">
+            
+            <div class="schedule-card">
+              <div class="program">뉴스데스크</div>
+              <div class="time">녹화: -</div>
+              <div class="location">장소: -</div>
+              <div class="notes">비고: 오홍택, 오승민</div>
+            </div>
             
             <div class="schedule-card">
               <div class="program">뉴스데스크</div>
@@ -311,5 +318,59 @@
       </tbody>
     </table>
   </div>
+
+  <script>
+    (function () {
+      const weekdayNames = ["월", "화", "수", "목", "금", "토", "일"];
+      const weekdayNamesSundayFirst = ["일", "월", "화", "수", "목", "금", "토"];
+
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+
+      const formatDate = (d) =>
+        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+      const monday = new Date(now);
+      const dayOfWeek = now.getDay(); // 0=일, 1=월
+      const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+      monday.setDate(now.getDate() + diffToMonday);
+      monday.setHours(0, 0, 0, 0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      document.getElementById("week-range").textContent =
+        `이번 주: ${formatDate(monday)} ~ ${formatDate(sunday)}`;
+
+      document.getElementById("today-text").textContent =
+        `오늘 날짜: ${formatDate(now)} (${weekdayNamesSundayFirst[now.getDay()]})`;
+
+      const dateNodes = document.querySelectorAll("[data-date-index]");
+      const weekdayNodes = document.querySelectorAll("[data-weekday-index]");
+      const dayCells = document.querySelectorAll(".day-cell");
+
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+
+        if (weekdayNodes[i]) {
+          weekdayNodes[i].textContent = weekdayNames[i];
+        }
+
+        if (dateNodes[i]) {
+          dateNodes[i].textContent = `${pad(d.getMonth() + 1)}/${pad(d.getDate())}`;
+        }
+
+        if (dayCells[i]) {
+          if (i >= 5) {
+            dayCells[i].classList.add("weekend");
+          }
+          if (formatDate(d) === formatDate(now)) {
+            dayCells[i].classList.add("today");
+          }
+        }
+      }
+    })();
+  </script>
 </body>
 </html>
