@@ -1,1 +1,8 @@
-{"action":"delete","program":"테스트","recording_date":"2026-03-18","recording_time":"","location":"테스트","notes":""}
+{
+  "action": "add",
+  "program": "도지사토론회",
+  "recording_date": "2026-03-25",
+  "recording_time": "15:00",
+  "location": "공개홀",
+  "notes": ""
+}
