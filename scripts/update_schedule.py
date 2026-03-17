@@ -229,33 +229,32 @@ def build_html(data: list):
   <style>
     body {{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 24px;
+      margin: 20px;
       background: #f4f6f8;
       color: #111;
+      font-size: 17px;
     }}
     h1 {{
-      margin-bottom: 6px;
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 34px;
+      line-height: 1.2;
     }}
     h2 {{
-      margin-top: 36px;
-      margin-bottom: 12px;
-      font-size: 22px;
-    }}
-    .meta {{
-      color: #666;
-      margin-bottom: 20px;
-      font-size: 14px;
-      line-height: 1.5;
+      margin-top: 24px;
+      margin-bottom: 14px;
+      font-size: 26px;
+      line-height: 1.25;
     }}
     .week-grid {{
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 14px;
+      gap: 16px;
     }}
     .day-cell {{
       background: white;
       border-radius: 16px;
-      padding: 14px;
+      padding: 16px;
       min-height: 260px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
       border: 2px solid transparent;
@@ -268,88 +267,103 @@ def build_html(data: list):
     .day-cell.weekend {{
       background: #fcfcfd;
     }}
+    .day-cell.weekend .weekday,
+    .day-cell.weekend .date,
+    .day-cell.weekend .program,
+    .day-cell.weekend .time,
+    .day-cell.weekend .location,
+    .day-cell.weekend .notes,
+    .day-cell.weekend .empty {{
+      color: #c62828;
+    }}
     .day-header {{
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #ececec;
     }}
     .weekday {{
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 21px;
+      font-weight: 800;
     }}
     .date {{
-      font-size: 14px;
-      color: #666;
+      font-size: 19px;
+      font-weight: 700;
+      color: #555;
     }}
     .schedule-card {{
       background: #f8fafc;
       border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
       border: 1px solid #e5e7eb;
     }}
     .program {{
-      font-weight: 700;
-      font-size: 15px;
-      margin-bottom: 6px;
+      font-weight: 800;
+      font-size: 17px;
+      margin-bottom: 8px;
+      line-height: 1.35;
     }}
     .time, .location, .notes {{
-      font-size: 13px;
-      margin-bottom: 4px;
+      font-size: 15px;
+      margin-bottom: 6px;
       color: #333;
-      line-height: 1.4;
+      line-height: 1.5;
       word-break: break-word;
     }}
+    .time {{
+      font-weight: 800;
+    }}
     .empty {{
-      font-size: 13px;
+      font-size: 15px;
       color: #999;
       padding: 8px 0;
     }}
     .manual-duty-box {{
       margin-top: 12px;
-      padding: 10px;
+      padding: 12px;
       border: 1px dashed #cbd5e1;
       border-radius: 12px;
       background: #fffdf7;
     }}
     .manual-duty-title {{
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 6px;
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 8px;
     }}
     .manual-duty-fixed {{
-      font-size: 13px;
-      margin-bottom: 8px;
+      font-size: 15px;
+      margin-bottom: 10px;
       color: #444;
     }}
     .manual-duty-input {{
       width: 100%;
       box-sizing: border-box;
-      padding: 9px 10px;
+      padding: 10px 12px;
       border: 1px solid #d1d5db;
       border-radius: 10px;
-      font-size: 13px;
-      margin-bottom: 8px;
+      font-size: 15px;
+      margin-bottom: 10px;
       background: #fff;
     }}
     .manual-duty-button {{
       width: 100%;
       border: 0;
       border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 13px;
-      font-weight: 700;
+      padding: 11px 12px;
+      font-size: 15px;
+      font-weight: 800;
       cursor: pointer;
       background: #111827;
       color: white;
     }}
     .manual-duty-status {{
       margin-top: 8px;
-      font-size: 12px;
+      font-size: 13px;
       color: #555;
+      line-height: 1.4;
     }}
     .manual-duty-preview-card {{
       margin-top: 10px;
@@ -359,83 +373,87 @@ def build_html(data: list):
       padding: 10px;
     }}
     .manual-duty-preview-title {{
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       margin-bottom: 6px;
     }}
     .manual-duty-preview-line {{
-      font-size: 13px;
+      font-size: 15px;
       color: #333;
-      margin-bottom: 4px;
-      line-height: 1.4;
+      margin-bottom: 5px;
+      line-height: 1.45;
     }}
-    .list-wrap {{
+    .other-grid {{
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 16px;
+    }}
+    .other-day-card {{
       background: white;
       border-radius: 16px;
       padding: 16px;
+      min-height: 220px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-      overflow-x: auto;
+      border: 1px solid #e5e7eb;
     }}
-    table {{
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 860px;
+    .other-day-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ececec;
     }}
-    th, td {{
-      padding: 12px 10px;
-      border-bottom: 1px solid #e8e8e8;
-      text-align: left;
-      vertical-align: top;
-      font-size: 14px;
+    .other-weekday {{
+      font-size: 20px;
+      font-weight: 800;
     }}
-    th {{
-      background: #fafafa;
+    .other-date {{
+      font-size: 17px;
+      font-weight: 700;
+      color: #555;
     }}
-    @media (max-width: 1200px) {{
-      .week-grid {{
+    .other-day-card.weekend .other-weekday,
+    .other-day-card.weekend .other-date,
+    .other-day-card.weekend .program,
+    .other-day-card.weekend .time,
+    .other-day-card.weekend .location,
+    .other-day-card.weekend .notes,
+    .other-day-card.weekend .empty {{
+      color: #c62828;
+    }}
+    @media (max-width: 1400px) {{
+      .week-grid, .other-grid {{
         grid-template-columns: repeat(2, 1fr);
       }}
     }}
-    @media (max-width: 700px) {{
-      .week-grid {{
+    @media (max-width: 800px) {{
+      .week-grid, .other-grid {{
         grid-template-columns: 1fr;
+      }}
+      body {{
+        font-size: 16px;
+      }}
+      h1 {{
+        font-size: 30px;
       }}
     }}
   </style>
 </head>
 <body>
   <h1>주간 녹화 계획표</h1>
-  <div class="meta">
-    <div id="week-range"></div>
-    <div id="today-text"></div>
-  </div>
 
   <h2>이번 주 일정</h2>
   <div class="week-grid" id="week-grid"></div>
 
   <h2>다른 주 일정</h2>
-  <div class="list-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>녹화일</th>
-          <th>요일</th>
-          <th>프로그램</th>
-          <th>녹화시간</th>
-          <th>장소</th>
-          <th>비고</th>
-        </tr>
-      </thead>
-      <tbody id="other-schedule-body"></tbody>
-    </table>
-  </div>
+  <div class="other-grid" id="other-grid"></div>
 
   <script>
     const SCHEDULE_DATA = {schedule_json};
 
     (function () {{
       const weekdayNames = ["월", "화", "수", "목", "금", "토", "일"];
-      const weekdayNamesSundayFirst = ["일", "월", "화", "수", "목", "금", "토"];
       const pad = (n) => String(n).padStart(2, "0");
 
       const now = new Date();
@@ -451,14 +469,8 @@ def build_html(data: list):
       const sunday = new Date(monday);
       sunday.setDate(monday.getDate() + 6);
 
-      document.getElementById("week-range").textContent =
-        `이번 주: ${{formatDate(monday)}} ~ ${{formatDate(sunday)}}`;
-
-      document.getElementById("today-text").textContent =
-        `오늘 날짜: ${{formatDate(now)}} (${{weekdayNamesSundayFirst[now.getDay()]}})`;
-
       const weekGrid = document.getElementById("week-grid");
-      const otherBody = document.getElementById("other-schedule-body");
+      const otherGrid = document.getElementById("other-grid");
 
       function escapeHtml(str) {{
         return String(str || "")
@@ -469,20 +481,24 @@ def build_html(data: list):
           .replaceAll("'", "&#39;");
       }}
 
-      function getWeekdayKor(dateStr) {{
-        try {{
-          const d = new Date(dateStr + "T00:00:00");
-          const idx = d.getDay();
-          return ["일", "월", "화", "수", "목", "금", "토"][idx];
-        }} catch {{
-          return "";
-        }}
+      function getWeekdayInfo(dateStr) {{
+        const d = new Date(dateStr + "T00:00:00");
+        if (isNaN(d)) return null;
+        const jsDay = d.getDay(); // 0 sunday
+        const weekdayIndex = jsDay === 0 ? 6 : jsDay - 1; // monday 0
+        return {{
+          dateObj: d,
+          weekdayIndex,
+          weekdayKor: weekdayNames[weekdayIndex],
+          isWeekend: weekdayIndex >= 5
+        }};
       }}
 
       function getWeekSortKey(dateStr) {{
-        const d = new Date(dateStr + "T00:00:00");
-        if (isNaN(d)) return [9999, 99, 99];
+        const info = getWeekdayInfo(dateStr);
+        if (!info) return [9999, 99, 99];
 
+        const d = info.dateObj;
         const dayNum = d.getDay() === 0 ? 7 : d.getDay();
         const thursday = new Date(d);
         thursday.setDate(d.getDate() + (4 - dayNum));
@@ -502,7 +518,7 @@ def build_html(data: list):
       const groupedThisWeek = {{}};
       weekDates.forEach(d => groupedThisWeek[formatDate(d)] = []);
 
-      const otherItems = [];
+      const futureOtherItems = [];
 
       (SCHEDULE_DATA || []).forEach(item => {{
         const rd = item.recording_date || "";
@@ -513,13 +529,11 @@ def build_html(data: list):
           return;
         }}
 
-        // 이번 주 이전 날짜는 다른 주 일정에서도 숨김
         if (rd < formatDate(monday)) {{
           return;
         }}
 
-        // 이번 주 이후 일정만 다른 주 일정에 표시
-        otherItems.push(item);
+        futureOtherItems.push(item);
       }});
 
       weekDates.forEach((d, i) => {{
@@ -574,7 +588,9 @@ def build_html(data: list):
         weekGrid.appendChild(cell);
       }});
 
-      otherItems.sort((a, b) => {{
+      const groupedOtherByWeekday = [[], [], [], [], [], [], []];
+
+      futureOtherItems.sort((a, b) => {{
         const k1 = getWeekSortKey(a.recording_date || "");
         const k2 = getWeekSortKey(b.recording_date || "");
 
@@ -589,19 +605,40 @@ def build_html(data: list):
         return (a.program || "").localeCompare(b.program || "");
       }});
 
-      if (otherItems.length === 0) {{
-        otherBody.innerHTML = '<tr><td colspan="6">다른 주 일정이 없습니다.</td></tr>';
-      }} else {{
-        otherBody.innerHTML = otherItems.map(item => `
-          <tr>
-            <td>${{escapeHtml(item.recording_date || "")}}</td>
-            <td>${{escapeHtml(getWeekdayKor(item.recording_date || ""))}}</td>
-            <td>${{escapeHtml(item.program || "")}}</td>
-            <td>${{escapeHtml(item.recording_time || "")}}</td>
-            <td>${{escapeHtml(item.location || "")}}</td>
-            <td>${{escapeHtml(item.notes || "")}}</td>
-          </tr>
-        `).join("");
+      futureOtherItems.forEach(item => {{
+        const info = getWeekdayInfo(item.recording_date || "");
+        if (!info) return;
+        groupedOtherByWeekday[info.weekdayIndex].push(item);
+      }});
+
+      for (let i = 0; i < 7; i++) {{
+        const isWeekend = i >= 5;
+        const items = groupedOtherByWeekday[i];
+
+        const cards = items.length
+          ? items.map(item => `
+              <div class="schedule-card">
+                <div class="program">${{escapeHtml(item.program)}}</div>
+                <div class="time">녹화일: ${{escapeHtml(item.recording_date || "-")}}</div>
+                <div class="time">녹화: ${{escapeHtml(item.recording_time || "-")}}</div>
+                <div class="location">장소: ${{escapeHtml(item.location || "-")}}</div>
+                <div class="notes">비고: ${{escapeHtml(item.notes || "-")}}</div>
+              </div>
+            `).join("")
+          : '<div class="empty">일정 없음</div>';
+
+        const card = document.createElement("div");
+        card.className = "other-day-card" + (isWeekend ? " weekend" : "");
+        card.innerHTML = `
+          <div class="other-day-header">
+            <div class="other-weekday">${{weekdayNames[i]}}</div>
+            <div class="other-date">다른 주</div>
+          </div>
+          <div class="other-day-body">
+            ${{cards}}
+          </div>
+        `;
+        otherGrid.appendChild(card);
       }}
 
       const sundayKey = `newsdesk-duty-${{formatDate(sunday)}}`;
