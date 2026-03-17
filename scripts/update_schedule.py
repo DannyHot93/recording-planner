@@ -230,7 +230,7 @@ def build_html(data: list):
     body {{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 20px;
-      background: #111827;
+      background: #0f172a;
       color: #f5f5f5;
       font-size: 17px;
     }}
