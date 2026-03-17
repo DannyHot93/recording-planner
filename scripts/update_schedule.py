@@ -239,14 +239,14 @@ def build_html(data: list):
       margin-bottom: 12px;
       font-size: 34px;
       line-height: 1.2;
-      color: #fff;
+      color: #000;
     }}
     h2 {{
       margin-top: 24px;
       margin-bottom: 14px;
       font-size: 26px;
       line-height: 1.25;
-      color: #fff;
+      color: #000;
     }}
     .week-grid {{
       display: grid;
