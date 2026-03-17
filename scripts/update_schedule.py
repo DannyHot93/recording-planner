@@ -230,8 +230,8 @@ def build_html(data: list):
     body {{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 20px;
-      background: #f4f6f8;
-      color: #111;
+      background: #000;
+      color: #f5f5f5;
       font-size: 17px;
     }}
     h1 {{
@@ -239,12 +239,14 @@ def build_html(data: list):
       margin-bottom: 12px;
       font-size: 34px;
       line-height: 1.2;
+      color: #fff;
     }}
     h2 {{
       margin-top: 24px;
       margin-bottom: 14px;
       font-size: 26px;
       line-height: 1.25;
+      color: #fff;
     }}
     .week-grid {{
       display: grid;
@@ -252,16 +254,17 @@ def build_html(data: list):
       gap: 16px;
     }}
     .day-cell {{
-      background: white;
+      background: #ffffff;
+      color: #111;
       border-radius: 16px;
       padding: 16px;
       min-height: 260px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
       border: 2px solid transparent;
     }}
     .day-cell.today {{
       border-color: #2563eb;
-      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.18);
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
       background: #eef5ff;
     }}
     .day-cell.weekend {{
@@ -273,7 +276,8 @@ def build_html(data: list):
     .day-cell.weekend .time,
     .day-cell.weekend .location,
     .day-cell.weekend .notes,
-    .day-cell.weekend .empty {{
+    .day-cell.weekend .empty,
+    .day-cell.weekend .schedule-detail {{
       color: #c62828;
     }}
     .day-header {{
@@ -293,12 +297,19 @@ def build_html(data: list):
       font-weight: 700;
       color: #555;
     }}
+
+    /* 이번 주 카드 */
     .schedule-card {{
       background: #f8fafc;
       border-radius: 12px;
       padding: 12px;
       margin-bottom: 12px;
       border: 1px solid #e5e7eb;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }}
+    .schedule-card:hover {{
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.10);
     }}
     .program {{
       font-weight: 800;
@@ -316,11 +327,22 @@ def build_html(data: list):
     .time {{
       font-weight: 800;
     }}
+
+    /* hover 전에는 장소/비고 숨김 */
+    .schedule-detail {{
+      display: none;
+      margin-top: 8px;
+    }}
+    .schedule-card:hover .schedule-detail {{
+      display: block;
+    }}
+
     .empty {{
       font-size: 15px;
       color: #999;
       padding: 8px 0;
     }}
+
     .manual-duty-box {{
       margin-top: 12px;
       padding: 12px;
@@ -332,6 +354,7 @@ def build_html(data: list):
       font-size: 16px;
       font-weight: 800;
       margin-bottom: 8px;
+      color: #111;
     }}
     .manual-duty-fixed {{
       font-size: 15px;
@@ -347,6 +370,7 @@ def build_html(data: list):
       font-size: 15px;
       margin-bottom: 10px;
       background: #fff;
+      color: #111;
     }}
     .manual-duty-button {{
       width: 100%;
@@ -376,6 +400,7 @@ def build_html(data: list):
       font-size: 16px;
       font-weight: 800;
       margin-bottom: 6px;
+      color: #111;
     }}
     .manual-duty-preview-line {{
       font-size: 15px;
@@ -383,17 +408,19 @@ def build_html(data: list):
       margin-bottom: 5px;
       line-height: 1.45;
     }}
+
     .other-grid {{
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 16px;
     }}
     .other-day-card {{
-      background: white;
+      background: #ffffff;
+      color: #111;
       border-radius: 16px;
       padding: 16px;
       min-height: 220px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
       border: 1px solid #e5e7eb;
     }}
     .other-day-header {{
@@ -422,6 +449,7 @@ def build_html(data: list):
     .other-day-card.weekend .empty {{
       color: #c62828;
     }}
+
     @media (max-width: 1400px) {{
       .week-grid, .other-grid {{
         grid-template-columns: repeat(2, 1fr);
@@ -484,8 +512,8 @@ def build_html(data: list):
       function getWeekdayInfo(dateStr) {{
         const d = new Date(dateStr + "T00:00:00");
         if (isNaN(d)) return null;
-        const jsDay = d.getDay(); // 0 sunday
-        const weekdayIndex = jsDay === 0 ? 6 : jsDay - 1; // monday 0
+        const jsDay = d.getDay();
+        const weekdayIndex = jsDay === 0 ? 6 : jsDay - 1;
         return {{
           dateObj: d,
           weekdayIndex,
@@ -553,8 +581,10 @@ def build_html(data: list):
               <div class="schedule-card">
                 <div class="program">${{escapeHtml(item.program)}}</div>
                 <div class="time">녹화: ${{escapeHtml(item.recording_time || "-")}}</div>
-                <div class="location">장소: ${{escapeHtml(item.location || "-")}}</div>
-                <div class="notes">비고: ${{escapeHtml(item.notes || "-")}}</div>
+                <div class="schedule-detail">
+                  <div class="location">장소: ${{escapeHtml(item.location || "-")}}</div>
+                  <div class="notes">비고: ${{escapeHtml(item.notes || "-")}}</div>
+                </div>
               </div>
             `).join("")
           : '<div class="empty">일정 없음</div>';
