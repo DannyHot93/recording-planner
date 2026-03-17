@@ -328,6 +328,9 @@ def build_html(data: list):
       font-weight: 800;
       font-size: 22.5px;
     }}
+    .week-grid .time {{
+      color: #2563eb;
+    }}
 
     /* hover 전에는 장소/비고 숨김 */
     .schedule-detail {{
