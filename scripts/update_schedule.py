@@ -326,6 +326,7 @@ def build_html(data: list):
     }}
     .time {{
       font-weight: 800;
+      font-size: 22.5px;
     }}
 
     /* hover 전에는 장소/비고 숨김 */
@@ -580,7 +581,7 @@ def build_html(data: list):
           ? items.map(item => `
               <div class="schedule-card">
                 <div class="program">${{escapeHtml(item.program)}}</div>
-                <div class="time">녹화: ${{escapeHtml(item.recording_time || "-")}}</div>
+                <div class="time">시간: ${{escapeHtml(item.recording_time || "-")}}</div>
                 <div class="schedule-detail">
                   <div class="location">장소: ${{escapeHtml(item.location || "-")}}</div>
                   <div class="notes">비고: ${{escapeHtml(item.notes || "-")}}</div>
