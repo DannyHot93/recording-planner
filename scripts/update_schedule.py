@@ -297,6 +297,8 @@ def build_html(data: list):
       font-weight: 700;
       color: #555;
     }}
+
+    /* 이번 주 카드 */
     .schedule-card {{
       background: #f8fafc;
       border-radius: 12px;
@@ -324,8 +326,9 @@ def build_html(data: list):
     }}
     .time {{
       font-weight: 800;
-      font-size: 22px;
     }}
+
+    /* hover 전에는 장소/비고 숨김 */
     .schedule-detail {{
       display: none;
       margin-top: 8px;
@@ -333,11 +336,13 @@ def build_html(data: list):
     .schedule-card:hover .schedule-detail {{
       display: block;
     }}
+
     .empty {{
       font-size: 15px;
       color: #999;
       padding: 8px 0;
     }}
+
     .manual-duty-box {{
       margin-top: 12px;
       padding: 12px;
@@ -403,6 +408,7 @@ def build_html(data: list):
       margin-bottom: 5px;
       line-height: 1.45;
     }}
+
     .other-grid {{
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -443,6 +449,7 @@ def build_html(data: list):
     .other-day-card.weekend .empty {{
       color: #c62828;
     }}
+
     @media (max-width: 1400px) {{
       .week-grid, .other-grid {{
         grid-template-columns: repeat(2, 1fr);
@@ -573,7 +580,7 @@ def build_html(data: list):
           ? items.map(item => `
               <div class="schedule-card">
                 <div class="program">${{escapeHtml(item.program)}}</div>
-                <div class="time">시간: ${{escapeHtml(item.recording_time || "-")}}</div>
+                <div class="time">녹화: ${{escapeHtml(item.recording_time || "-")}}</div>
                 <div class="schedule-detail">
                   <div class="location">장소: ${{escapeHtml(item.location || "-")}}</div>
                   <div class="notes">비고: ${{escapeHtml(item.notes || "-")}}</div>
@@ -642,7 +649,8 @@ def build_html(data: list):
           ? items.map(item => `
               <div class="schedule-card">
                 <div class="program">${{escapeHtml(item.program)}}</div>
-                <div class="time">시간: ${{escapeHtml(item.recording_time || "-")}}</div>
+                <div class="time">녹화일: ${{escapeHtml(item.recording_date || "-")}}</div>
+                <div class="time">녹화: ${{escapeHtml(item.recording_time || "-")}}</div>
                 <div class="location">장소: ${{escapeHtml(item.location || "-")}}</div>
                 <div class="notes">비고: ${{escapeHtml(item.notes || "-")}}</div>
               </div>
@@ -661,7 +669,7 @@ def build_html(data: list):
           </div>
         `;
         otherGrid.appendChild(card);
-      }});
+      }}
 
       const sundayKey = `newsdesk-duty-${{formatDate(sunday)}}`;
       const nameInput = document.getElementById("manual-duty-name");
