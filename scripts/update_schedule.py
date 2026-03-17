@@ -317,6 +317,9 @@ def build_html(data: list):
       margin-bottom: 8px;
       line-height: 1.35;
     }}
+    .week-grid .program {{
+      font-size: 22.1px;
+    }}
     .time, .location, .notes {{
       font-size: 15px;
       margin-bottom: 6px;
