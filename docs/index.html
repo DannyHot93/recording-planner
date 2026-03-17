@@ -75,8 +75,6 @@
       font-weight: 700;
       color: #555;
     }
-
-    /* 이번 주 카드 */
     .schedule-card {
       background: #f8fafc;
       border-radius: 12px;
@@ -104,9 +102,8 @@
     }
     .time {
       font-weight: 800;
+      font-size: 22px;
     }
-
-    /* hover 전에는 장소/비고 숨김 */
     .schedule-detail {
       display: none;
       margin-top: 8px;
@@ -114,13 +111,11 @@
     .schedule-card:hover .schedule-detail {
       display: block;
     }
-
     .empty {
       font-size: 15px;
       color: #999;
       padding: 8px 0;
     }
-
     .manual-duty-box {
       margin-top: 12px;
       padding: 12px;
@@ -186,7 +181,6 @@
       margin-bottom: 5px;
       line-height: 1.45;
     }
-
     .other-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -227,7 +221,6 @@
     .other-day-card.weekend .empty {
       color: #c62828;
     }
-
     @media (max-width: 1400px) {
       .week-grid, .other-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -256,7 +249,7 @@
   <div class="other-grid" id="other-grid"></div>
 
   <script>
-    const SCHEDULE_DATA = [{"program": "블랙홀 청주콘서트", "recording_date": "2026-03-13", "meeting_time": "", "recording_time": "", "location": "공개홀, 로비", "notes": "협조사항: 영상디자인국 카메라 이동; 기술국 LED 영상 기자재 이동; 대관환경 조성 협조 요청", "created_at": "2026-03-12T18:17:06"}, {"program": "블랙홀 청주콘서트", "recording_date": "2026-03-14", "recording_time": "", "location": "공개홀", "notes": "", "created_at": "2026-03-14T01:46:48"}, {"program": "즐거운 오후", "recording_date": "2026-03-17", "meeting_time": "", "recording_time": "14:05~16:00", "location": "A스튜디오", "notes": "담당PD: 오규익; 녹화내용: 1부 손님온다; 2~4부 라이브 공연: 가수 문초희; 특이사항: 반주기 사용없음", "created_at": "2026-03-12T17:25:00"}, {"program": "프라임인터뷰", "recording_date": "2026-03-17", "meeting_time": "", "recording_time": "16:00-17:00", "location": "4층 스튜디오", "notes": "담당PD: 김영수; 출연: 박상혁 교수(중원대학교 드론봇 군사학과)", "created_at": "2026-03-15T19:21:38"}, {"program": "민주당 도지사 경선 토론회 스텝회의", "recording_date": "2026-03-18", "recording_time": "14:00", "location": "5층", "notes": "", "created_at": "2026-03-16T17:15:17"}, {"program": "성희롱대면교육", "recording_date": "2026-03-19", "recording_time": "10:00~12:00", "location": "", "notes": "", "created_at": "2026-03-17T14:33:09"}, {"program": "통섭의 광장", "recording_date": "2026-03-19", "recording_time": "19:00", "location": "공개홀", "notes": "", "created_at": "2026-03-12T19:50:30"}, {"program": "성희롱대면교육", "recording_date": "2026-03-20", "recording_time": "", "location": "", "notes": "", "created_at": "2026-03-13T00:56:25"}, {"program": "도지사토론회", "recording_date": "2026-03-23", "recording_time": "17:00", "location": "공개홀", "notes": "", "created_at": "2026-03-16T12:33:57"}, {"program": "전국시대", "recording_date": "2026-03-25", "recording_time": "10:30-11:30", "location": "공개홀", "notes": "", "created_at": "2026-03-16T17:13:36"}, {"program": "충북 시사토론 창", "recording_date": "2026-03-25", "recording_time": "14:00-15:10", "location": "4층 뉴스룸", "notes": "담당PD: 설경철; 녹화내용: 3월 월간뉴스분석; 패널 4명 출연 / 좌 2명, 우 2명", "created_at": "2026-03-15T12:09:23"}, {"program": "아나운서 카메라테스트", "recording_date": "2026-03-27", "recording_time": "", "location": "뉴스센터", "notes": "", "created_at": "2026-03-16T14:11:20"}];
+    const SCHEDULE_DATA = [{"program": "블랙홀 청주콘서트", "recording_date": "2026-03-13", "meeting_time": "", "recording_time": "", "location": "공개홀, 로비", "notes": "협조사항: 영상디자인국 카메라 이동; 기술국 LED 영상 기자재 이동; 대관환경 조성 협조 요청", "created_at": "2026-03-12T18:17:06"}, {"program": "블랙홀 청주콘서트", "recording_date": "2026-03-14", "recording_time": "", "location": "공개홀", "notes": "", "created_at": "2026-03-14T01:46:48"}, {"program": "즐거운 오후", "recording_date": "2026-03-17", "meeting_time": "", "recording_time": "14:05~16:00", "location": "A스튜디오", "notes": "담당PD: 오규익; 녹화내용: 1부 손님온다; 2~4부 라이브 공연: 가수 문초희; 특이사항: 반주기 사용없음", "created_at": "2026-03-12T17:25:00"}, {"program": "프라임인터뷰", "recording_date": "2026-03-17", "meeting_time": "", "recording_time": "16:00-17:00", "location": "4층 스튜디오", "notes": "담당PD: 김영수; 출연: 박상혁 교수(중원대학교 드론봇 군사학과)", "created_at": "2026-03-15T19:21:38"}, {"program": "민주당 도지사 경선 토론회 스텝회의", "recording_date": "2026-03-18", "recording_time": "14:00", "location": "5층", "notes": "", "created_at": "2026-03-16T17:15:17"}, {"program": "성희롱대면교육", "recording_date": "2026-03-19", "recording_time": "10:00~12:00", "location": "", "notes": "", "created_at": "2026-03-17T14:33:09"}, {"program": "성희롱대면교육", "recording_date": "2026-03-19", "recording_time": "10:00~12:00", "location": "", "notes": "", "created_at": "2026-03-17T14:41:56"}, {"program": "통섭의 광장", "recording_date": "2026-03-19", "recording_time": "19:00", "location": "공개홀", "notes": "", "created_at": "2026-03-12T19:50:30"}, {"program": "성희롱대면교육", "recording_date": "2026-03-20", "recording_time": "", "location": "", "notes": "", "created_at": "2026-03-13T00:56:25"}, {"program": "도지사토론회", "recording_date": "2026-03-23", "recording_time": "17:00", "location": "공개홀", "notes": "", "created_at": "2026-03-16T12:33:57"}, {"program": "전국시대", "recording_date": "2026-03-25", "recording_time": "10:30-11:30", "location": "공개홀", "notes": "", "created_at": "2026-03-16T17:13:36"}, {"program": "충북 시사토론 창", "recording_date": "2026-03-25", "recording_time": "14:00-15:10", "location": "4층 뉴스룸", "notes": "담당PD: 설경철; 녹화내용: 3월 월간뉴스분석; 패널 4명 출연 / 좌 2명, 우 2명", "created_at": "2026-03-15T12:09:23"}, {"program": "아나운서 카메라테스트", "recording_date": "2026-03-27", "recording_time": "", "location": "뉴스센터", "notes": "", "created_at": "2026-03-16T14:11:20"}];
 
     (function () {
       const weekdayNames = ["월", "화", "수", "목", "금", "토", "일"];
@@ -358,7 +351,7 @@
           ? items.map(item => `
               <div class="schedule-card">
                 <div class="program">${escapeHtml(item.program)}</div>
-                <div class="time">녹화: ${escapeHtml(item.recording_time || "-")}</div>
+                <div class="time">시간: ${escapeHtml(item.recording_time || "-")}</div>
                 <div class="schedule-detail">
                   <div class="location">장소: ${escapeHtml(item.location || "-")}</div>
                   <div class="notes">비고: ${escapeHtml(item.notes || "-")}</div>
@@ -427,8 +420,7 @@
           ? items.map(item => `
               <div class="schedule-card">
                 <div class="program">${escapeHtml(item.program)}</div>
-                <div class="time">녹화일: ${escapeHtml(item.recording_date || "-")}</div>
-                <div class="time">녹화: ${escapeHtml(item.recording_time || "-")}</div>
+                <div class="time">시간: ${escapeHtml(item.recording_time || "-")}</div>
                 <div class="location">장소: ${escapeHtml(item.location || "-")}</div>
                 <div class="notes">비고: ${escapeHtml(item.notes || "-")}</div>
               </div>
@@ -447,7 +439,7 @@
           </div>
         `;
         otherGrid.appendChild(card);
-      }
+      });
 
       const sundayKey = `newsdesk-duty-${formatDate(sunday)}`;
       const nameInput = document.getElementById("manual-duty-name");
