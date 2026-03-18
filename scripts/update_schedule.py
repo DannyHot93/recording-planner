@@ -281,7 +281,7 @@ def build_html(data: list):
     }}
     .memo-textarea {{
       width: 100%;
-      height: 78px;
+      height: 64px;
       box-sizing: border-box;
       resize: none;
       border: 1px solid #cbd5e1;
