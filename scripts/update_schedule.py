@@ -252,13 +252,13 @@ def build_html(data: list):
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 14px;
+      gap: 10px;
       margin-bottom: 16px;
     }}
     .memo-box {{
-      width: 520px;
-      min-width: 520px;
-      max-width: 520px;
+      width: 640px;
+      min-width: 640px;
+      max-width: 640px;
       background: #ffffff;
       border: 1px solid #d1d5db;
       border-radius: 14px;
@@ -278,7 +278,7 @@ def build_html(data: list):
       resize: none;
       border: 1px solid #cbd5e1;
       border-radius: 10px;
-      padding: 10px 12px;
+      padding: 8px 10px;
       font-size: 14px;
       line-height: 1.5;
       color: #111;
@@ -365,7 +365,7 @@ def build_html(data: list):
     }}
     .time, .location, .notes {{
       font-size: 15px;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
       color: #333;
       line-height: 1.5;
       word-break: break-word;
@@ -457,7 +457,7 @@ def build_html(data: list):
     .manual-duty-preview-title {{
       font-size: 16px;
       font-weight: 800;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: #111;
     }}
     .manual-duty-preview-line {{
