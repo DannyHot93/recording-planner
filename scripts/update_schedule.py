@@ -513,16 +513,7 @@ def build_html(data: list):
         grid-template-columns: repeat(2, 1fr);
       }}
     }}
-    @media (max-width: 1100px) {{
-      .top-bar {{
-        flex-direction: column;
-      }}
-      .memo-box {{
-        width: 100%;
-        min-width: 0;
-        max-width: none;
-      }}
-    }}
+
     @media (max-width: 800px) {{
       .week-grid, .other-grid {{
         grid-template-columns: 1fr;
@@ -537,14 +528,7 @@ def build_html(data: list):
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <h1>주간 녹화 계획표</h1>
-    <div class="memo-box">
-      <div class="memo-title">메모</div>
-      <textarea id="page-memo-input" class="memo-textarea" placeholder="메모를 입력하세요"></textarea>
-      <div id="page-memo-status" class="memo-status"></div>
-    </div>
-  </div>
+  <h1>주간 녹화 계획표</h1>
 
   <h2>이번 주 일정</h2>
   <div class="week-grid" id="week-grid"></div>
@@ -790,28 +774,7 @@ def build_html(data: list):
         }});
       }}
 
-      const memoInput = document.getElementById("page-memo-input");
-      const memoStatus = document.getElementById("page-memo-status");
-      const memoStorageKey = "weekly-recording-page-memo";
 
-      const savedMemo = localStorage.getItem(memoStorageKey) || "";
-      if (memoInput) memoInput.value = savedMemo;
-
-      let memoSaveTimer = null;
-
-      function saveMemoInstant() {{
-        const value = memoInput?.value || "";
-        localStorage.setItem(memoStorageKey, value);
-        if (memoStatus) memoStatus.textContent = "자동 저장됨";
-      }}
-
-      if (memoInput) {{
-        memoInput.addEventListener("input", function () {{
-          if (memoStatus) memoStatus.textContent = "입력 중...";
-          clearTimeout(memoSaveTimer);
-          memoSaveTimer = setTimeout(saveMemoInstant, 150);
-        }});
-      }}
     }})();
   </script>
 </body>
