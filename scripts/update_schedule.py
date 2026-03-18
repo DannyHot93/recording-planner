@@ -252,13 +252,13 @@ def build_html(data: list):
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 8px;
+      gap: 24px;
       margin-bottom: 16px;
     }}
     .memo-box {{
-      width: 760px;
-      min-width: 760px;
-      max-width: 760px;
+      width: 320px;
+      min-width: 320px;
+      max-width: 320px;
       background: #ffffff;
       border: 1px solid #d1d5db;
       border-radius: 14px;
@@ -278,18 +278,29 @@ def build_html(data: list):
       resize: none;
       border: 1px solid #cbd5e1;
       border-radius: 10px;
-      padding: 4px 8px;
-      font-size: 13px;
+      padding: 10px 12px;
+      font-size: 14px;
       line-height: 1.5;
       color: #111;
       background: #fff;
+    }}
+    .memo-save-button {{
+      width: 100%;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #111827;
+      color: #fff;
     }}
     .memo-status {{
       margin-top: 8px;
       font-size: 12px;
       color: #555;
       line-height: 1.4;
-      min-height: 12px;
     }}
     .week-grid {{
       display: grid;
@@ -364,8 +375,8 @@ def build_html(data: list):
       font-size: 22.1px;
     }}
     .time, .location, .notes {{
-      font-size: 14px;
-      margin-bottom: 0px;
+      font-size: 15px;
+      margin-bottom: 6px;
       color: #333;
       line-height: 1.5;
       word-break: break-word;
@@ -382,7 +393,7 @@ def build_html(data: list):
       letter-spacing: -0.02em;
     }}
     .other-grid .time {{
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 400;
     }}
 
@@ -422,7 +433,7 @@ def build_html(data: list):
     .manual-duty-input {{
       width: 100%;
       box-sizing: border-box;
-      padding: 6px 8px;
+      padding: 10px 12px;
       border: 1px solid #d1d5db;
       border-radius: 10px;
       font-size: 15px;
@@ -457,14 +468,14 @@ def build_html(data: list):
     .manual-duty-preview-title {{
       font-size: 16px;
       font-weight: 800;
-      margin-bottom: 0;
+      margin-bottom: 6px;
       color: #111;
     }}
     .manual-duty-preview-line {{
       font-size: 15px;
       color: #333;
       margin-bottom: 5px;
-      line-height: 1.2;
+      line-height: 1.45;
     }}
 
     .other-grid {{
@@ -513,7 +524,16 @@ def build_html(data: list):
         grid-template-columns: repeat(2, 1fr);
       }}
     }}
-
+    @media (max-width: 1100px) {{
+      .top-bar {{
+        flex-direction: column;
+      }}
+      .memo-box {{
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+      }}
+    }}
     @media (max-width: 800px) {{
       .week-grid, .other-grid {{
         grid-template-columns: 1fr;
@@ -528,7 +548,15 @@ def build_html(data: list):
   </style>
 </head>
 <body>
-  <h1>주간 녹화 계획표</h1>
+  <div class="top-bar">
+    <h1>주간 녹화 계획표</h1>
+    <div class="memo-box">
+      <div class="memo-title">메모</div>
+      <textarea id="page-memo-input" class="memo-textarea" placeholder="메모를 입력하세요"></textarea>
+      <button id="page-memo-save" class="memo-save-button">저장</button>
+      <div id="page-memo-status" class="memo-status"></div>
+    </div>
+  </div>
 
   <h2>이번 주 일정</h2>
   <div class="week-grid" id="week-grid"></div>
@@ -774,7 +802,21 @@ def build_html(data: list):
         }});
       }}
 
+      const memoInput = document.getElementById("page-memo-input");
+      const memoSaveButton = document.getElementById("page-memo-save");
+      const memoStatus = document.getElementById("page-memo-status");
+      const memoStorageKey = "weekly-recording-page-memo";
 
+      const savedMemo = localStorage.getItem(memoStorageKey) || "";
+      if (memoInput) memoInput.value = savedMemo;
+
+      if (memoSaveButton) {{
+        memoSaveButton.addEventListener("click", function () {{
+          const value = (memoInput?.value || "").trim();
+          localStorage.setItem(memoStorageKey, value);
+          if (memoStatus) memoStatus.textContent = "이 브라우저에 저장되었습니다.";
+        }});
+      }}
     }})();
   </script>
 </body>
