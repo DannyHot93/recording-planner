@@ -248,6 +248,60 @@ def build_html(data: list):
       line-height: 1.25;
       color: #000;
     }}
+    .top-bar {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 16px;
+    }}
+    .memo-box {{
+      width: 320px;
+      min-width: 320px;
+      max-width: 320px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }}
+    .memo-title {{
+      font-size: 16px;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 10px;
+    }}
+    .memo-textarea {{
+      width: 100%;
+      height: 140px;
+      box-sizing: border-box;
+      resize: none;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #111;
+      background: #fff;
+    }}
+    .memo-save-button {{
+      width: 100%;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #111827;
+      color: #fff;
+    }}
+    .memo-status {{
+      margin-top: 8px;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.4;
+    }}
     .week-grid {{
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -470,6 +524,16 @@ def build_html(data: list):
         grid-template-columns: repeat(2, 1fr);
       }}
     }}
+    @media (max-width: 1100px) {{
+      .top-bar {{
+        flex-direction: column;
+      }}
+      .memo-box {{
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+      }}
+    }}
     @media (max-width: 800px) {{
       .week-grid, .other-grid {{
         grid-template-columns: 1fr;
@@ -484,7 +548,15 @@ def build_html(data: list):
   </style>
 </head>
 <body>
-  <h1>주간 녹화 계획표</h1>
+  <div class="top-bar">
+    <h1>주간 녹화 계획표</h1>
+    <div class="memo-box">
+      <div class="memo-title">메모</div>
+      <textarea id="page-memo-input" class="memo-textarea" placeholder="메모를 입력하세요"></textarea>
+      <button id="page-memo-save" class="memo-save-button">저장</button>
+      <div id="page-memo-status" class="memo-status"></div>
+    </div>
+  </div>
 
   <h2>이번 주 일정</h2>
   <div class="week-grid" id="week-grid"></div>
@@ -727,6 +799,22 @@ def build_html(data: list):
           localStorage.setItem(sundayKey, value);
           if (statusEl) statusEl.textContent = "이 브라우저에 저장되었습니다.";
           renderDutyPreview(value);
+        }});
+      }}
+
+      const memoInput = document.getElementById("page-memo-input");
+      const memoSaveButton = document.getElementById("page-memo-save");
+      const memoStatus = document.getElementById("page-memo-status");
+      const memoStorageKey = "weekly-recording-page-memo";
+
+      const savedMemo = localStorage.getItem(memoStorageKey) || "";
+      if (memoInput) memoInput.value = savedMemo;
+
+      if (memoSaveButton) {{
+        memoSaveButton.addEventListener("click", function () {{
+          const value = (memoInput?.value || "").trim();
+          localStorage.setItem(memoStorageKey, value);
+          if (memoStatus) memoStatus.textContent = "이 브라우저에 저장되었습니다.";
         }});
       }}
     }})();
