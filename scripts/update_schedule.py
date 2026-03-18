@@ -333,6 +333,10 @@ def build_html(data: list):
     }}
     .week-grid .time {{
       color: #2563eb;
+      font-size: clamp(16px, 1.15vw, 20px);
+      white-space: nowrap;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
     }}
     .other-grid .time {{
       font-size: 15px;
