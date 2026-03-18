@@ -248,58 +248,6 @@ def build_html(data: list):
       line-height: 1.25;
       color: #000;
     }}
-    .top-bar {{
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 8px;
-    }}
-    .top-bar h1 {{
-      margin-bottom: 0;
-      flex: 0 0 auto;
-      line-height: 1.15;
-      padding-top: 6px;
-    }}
-    .memo-box {{
-      flex: 1 1 auto;
-      width: 100%;
-      min-width: 0;
-      max-width: 720px;
-      background: #ffffff;
-      border: 1px solid #d1d5db;
-      border-radius: 14px;
-      padding: 12px 14px 10px 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    }}
-    .memo-title {{
-      font-size: 15px;
-      font-weight: 800;
-      color: #111;
-      margin-bottom: 6px;
-      line-height: 1.2;
-    }}
-    .memo-textarea {{
-      width: 100%;
-      height: 64px;
-      box-sizing: border-box;
-      resize: none;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 14px;
-      line-height: 1.45;
-      color: #111;
-      background: #fff;
-      overflow-y: auto;
-    }}
-    .memo-status {{
-      margin-top: 6px;
-      font-size: 12px;
-      color: #555;
-      line-height: 1.3;
-      min-height: 16px;
-    }}
     .week-grid {{
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -522,23 +470,6 @@ def build_html(data: list):
         grid-template-columns: repeat(2, 1fr);
       }}
     }}
-    @media (max-width: 1100px) {{
-      .top-bar {{
-        flex-direction: column;
-        gap: 10px;
-      }}
-      .top-bar h1 {{
-        padding-top: 0;
-      }}
-      .memo-box {{
-        width: 100%;
-        min-width: 0;
-        max-width: none;
-      }}
-      .memo-textarea {{
-        height: 96px;
-      }}
-    }}
     @media (max-width: 800px) {{
       .week-grid, .other-grid {{
         grid-template-columns: 1fr;
@@ -553,14 +484,7 @@ def build_html(data: list):
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <h1>주간 녹화 계획표</h1>
-    <div class="memo-box">
-      <div class="memo-title">메모</div>
-      <textarea id="page-memo-input" class="memo-textarea" placeholder="메모를 입력하세요"></textarea>
-      <div id="page-memo-status" class="memo-status"></div>
-    </div>
-  </div>
+  <h1>주간 녹화 계획표</h1>
 
   <h2>이번 주 일정</h2>
   <div class="week-grid" id="week-grid"></div>
@@ -803,31 +727,6 @@ def build_html(data: list):
           localStorage.setItem(sundayKey, value);
           if (statusEl) statusEl.textContent = "이 브라우저에 저장되었습니다.";
           renderDutyPreview(value);
-        }});
-      }}
-
-      const memoInput = document.getElementById("page-memo-input");
-      const memoStatus = document.getElementById("page-memo-status");
-      const memoStorageKey = "weekly-recording-page-memo";
-
-      const savedMemo = localStorage.getItem(memoStorageKey) || "";
-      if (memoInput) memoInput.value = savedMemo;
-
-      let memoSaveTimer = null;
-
-      function saveMemoInstant() {{
-        const value = memoInput?.value || "";
-        localStorage.setItem(memoStorageKey, value);
-        if (memoStatus) {{
-          memoStatus.textContent = "자동 저장됨";
-        }}
-      }}
-
-      if (memoInput) {{
-        memoInput.addEventListener("input", function () {{
-          if (memoStatus) memoStatus.textContent = "입력 중...";
-          clearTimeout(memoSaveTimer);
-          memoSaveTimer = setTimeout(saveMemoInstant, 200);
         }});
       }}
     }})();
