@@ -252,13 +252,13 @@ def build_html(data: list):
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 24px;
+      gap: 14px;
       margin-bottom: 16px;
     }}
     .memo-box {{
-      width: 320px;
-      min-width: 320px;
-      max-width: 320px;
+      width: 520px;
+      min-width: 520px;
+      max-width: 520px;
       background: #ffffff;
       border: 1px solid #d1d5db;
       border-radius: 14px;
