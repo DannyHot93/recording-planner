@@ -1,8 +1,8 @@
 {
-  "action": "create",
-  "program": "신입 아나운서 모집 카메라테스트 전형 실시",
-  "recording_date": "2026-03-27",
-  "recording_time": "10:00~종료시까지",
-  "location": "4층 뉴스스튜디오",
-  "notes": "참가인원: 약 20명"
+  "action": "delete",
+  "program": "아나운서 카메라테스트",
+  "recording_date": "",
+  "recording_time": "",
+  "location": "뉴스센터",
+  "notes": ""
 }
