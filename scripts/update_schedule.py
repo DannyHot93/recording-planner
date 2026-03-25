@@ -576,7 +576,7 @@ def build_html(data: list):
     <h1>주간 녹화 계획표</h1>
     <div class="memo-box-row">
       <div class="memo-box">
-        <div class="memo-title">수기입력. 이 페이지에만 저장됩니다</div>
+        <div class="memo-title">휴가자 입력. 이 페이지에만 저장됩니다</div>
         <textarea id="page-manual-input" class="memo-textarea" placeholder="내용을 입력하세요"></textarea>
         <div id="page-manual-status" class="memo-status"></div>
       </div>
