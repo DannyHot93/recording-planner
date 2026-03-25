@@ -261,16 +261,8 @@ def build_html(data: list):
       line-height: 1.15;
       padding-top: 6px;
     }}
-    .memo-box-row {{
-      display: flex;
-      flex: 1 1 auto;
-      width: 100%;
-      min-width: 0;
-      max-width: 1480px;
-      gap: 18px;
-    }}
     .memo-box {{
-      flex: 1 1 0;
+      flex: 1 1 auto;
       width: 100%;
       min-width: 0;
       max-width: 720px;
@@ -286,13 +278,6 @@ def build_html(data: list):
       color: #111;
       margin-bottom: 6px;
       line-height: 1.2;
-    }}
-    .memo-subtitle {{
-      font-size: 12px;
-      font-weight: 700;
-      color: #666;
-      margin-bottom: 6px;
-      line-height: 1.35;
     }}
     .memo-textarea {{
       width: 100%;
@@ -545,10 +530,6 @@ def build_html(data: list):
       .top-bar h1 {{
         padding-top: 0;
       }}
-      .memo-box-row {{
-        flex-direction: column;
-        width: 100%;
-      }}
       .memo-box {{
         width: 100%;
         min-width: 0;
@@ -574,18 +555,10 @@ def build_html(data: list):
 <body>
   <div class="top-bar">
     <h1>주간 녹화 계획표</h1>
-    <div class="memo-box-row">
-      <div class="memo-box">
-        <div class="memo-title">수기입력. 이 페이지에만 저장됩니다</div>
-        <textarea id="page-manual-input" class="memo-textarea" placeholder="내용을 입력하세요"></textarea>
-        <div id="page-manual-status" class="memo-status"></div>
-      </div>
-      <div class="memo-box">
-        <div class="memo-title">메모</div>
-        <div class="memo-subtitle">수기입력. 이 페이지에만 저장됩니다</div>
-        <textarea id="page-memo-input" class="memo-textarea" placeholder="메모를 입력하세요"></textarea>
-        <div id="page-memo-status" class="memo-status"></div>
-      </div>
+    <div class="memo-box">
+      <div class="memo-title">메모</div>
+      <textarea id="page-memo-input" class="memo-textarea" placeholder="메모를 입력하세요"></textarea>
+      <div id="page-memo-status" class="memo-status"></div>
     </div>
   </div>
 
@@ -833,34 +806,30 @@ def build_html(data: list):
         }});
       }}
 
-      function setupLocalMemo(inputId, statusId, storageKey) {{
-        const inputEl = document.getElementById(inputId);
-        const statusEl = document.getElementById(statusId);
+      const memoInput = document.getElementById("page-memo-input");
+      const memoStatus = document.getElementById("page-memo-status");
+      const memoStorageKey = "weekly-recording-page-memo";
 
-        if (!inputEl) return;
+      const savedMemo = localStorage.getItem(memoStorageKey) || "";
+      if (memoInput) memoInput.value = savedMemo;
 
-        const savedValue = localStorage.getItem(storageKey) || "";
-        inputEl.value = savedValue;
+      let memoSaveTimer = null;
 
-        let saveTimer = null;
-
-        function saveNow() {{
-          const value = inputEl.value || "";
-          localStorage.setItem(storageKey, value);
-          if (statusEl) {{
-            statusEl.textContent = "자동 저장됨";
-          }}
+      function saveMemoInstant() {{
+        const value = memoInput?.value || "";
+        localStorage.setItem(memoStorageKey, value);
+        if (memoStatus) {{
+          memoStatus.textContent = "자동 저장됨";
         }}
-
-        inputEl.addEventListener("input", function () {{
-          if (statusEl) statusEl.textContent = "입력 중...";
-          clearTimeout(saveTimer);
-          saveTimer = setTimeout(saveNow, 200);
-        }});
       }}
 
-      setupLocalMemo("page-manual-input", "page-manual-status", "weekly-recording-page-manual");
-      setupLocalMemo("page-memo-input", "page-memo-status", "weekly-recording-page-memo");
+      if (memoInput) {{
+        memoInput.addEventListener("input", function () {{
+          if (memoStatus) memoStatus.textContent = "입력 중...";
+          clearTimeout(memoSaveTimer);
+          memoSaveTimer = setTimeout(saveMemoInstant, 200);
+        }});
+      }}
     }})();
   </script>
 </body>
