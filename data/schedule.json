@@ -1,21 +1,11 @@
 [
   {
-    "program": "즐거운 오후",
-    "recording_date": "2026-03-17",
-    "meeting_time": "",
-    "recording_time": "14:05~16:00",
-    "location": "A스튜디오",
-    "notes": "담당PD: 오규익; 녹화내용: 1부 손님온다; 2~4부 라이브 공연: 가수 문초희; 특이사항: 반주기 사용없음",
-    "created_at": "2026-03-12T17:25:00"
-  },
-  {
-    "program": "프라임인터뷰",
-    "recording_date": "2026-03-17",
-    "meeting_time": "",
-    "recording_time": "16:00-17:00",
-    "location": "4층 스튜디오",
-    "notes": "담당PD: 김영수; 출연: 박상혁 교수(중원대학교 드론봇 군사학과)",
-    "created_at": "2026-03-15T19:21:38"
+    "program": "충북 시사토론 창",
+    "recording_date": "",
+    "recording_time": "오후 2시 ~ 오후 3시 10분",
+    "location": "4층 뉴스룸",
+    "notes": "녹화내용: 학교 내 흉기 난동; 특기사항: 패널 4명 출연 (좌 2명, 우 2명); 담당PD: 설경철",
+    "created_at": "2026-03-25T11:10:36"
   },
   {
     "program": "도지사경선 스탭회의",
