@@ -1,8 +1,1 @@
-{
-  "action": "create",
-  "program": "2026 과학콘서트",
-  "recording_date": "2026-04-09",
-  "recording_time": "10:00 ~ 12:00",
-  "location": "MBC충북 청주방송국 공개홀",
-  "notes": "녹화내용: 과학콘서트 스튜디오 녹화; 출연: 정재승 교수(카이스트 바이오·뇌공학과); 주제: AI와 인간의 미래; 담당PD: 김영수"
-}
+{"action":"create","program":"프라임인터뷰","recording_date":"2026-03-31","recording_time":"16:20~17:00","location":"4층 스튜디오","notes":"담당PD: 김영수; 녹화내용: 극단 청년극장 엄춘미 배우(왕과사는남자 엄홍도 후손)"}
