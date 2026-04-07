@@ -96,19 +96,19 @@
     "created_at": "2026-04-06T11:48:58"
   },
   {
+    "program": "국민의힘 경선 토론회(1안)",
+    "recording_date": "2026-04-20",
+    "recording_time": "17:00-19:05",
+    "location": "공개홀",
+    "notes": "",
+    "created_at": "2026-04-07T09:42:04"
+  },
+  {
     "program": "국민의힘 경선 토론회(2안)",
     "recording_date": "2026-04-20",
     "recording_time": "17:10-19:05",
     "location": "공개홀",
     "notes": "",
     "created_at": "2026-04-07T09:40:32"
-  },
-  {
-    "program": "국민의힘 경선 토론회(1안)",
-    "recording_date": "2026-04-20",
-    "recording_time": "17:30-19:05",
-    "location": "공개홀",
-    "notes": "",
-    "created_at": "2026-04-07T09:41:07"
   }
 ]
