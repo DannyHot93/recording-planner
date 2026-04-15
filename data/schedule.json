@@ -72,14 +72,6 @@
     "created_at": "2026-04-15T12:05:49"
   },
   {
-    "program": "국민의힘 경선 토론회(1안)",
-    "recording_date": "2026-04-20",
-    "recording_time": "17:30-19:05",
-    "location": "공개홀",
-    "notes": "",
-    "created_at": "2026-04-07T09:45:15"
-  },
-  {
     "program": "국민의힘 충북도지사 경선 비전 토론회",
     "recording_date": "2026-04-20",
     "recording_time": "17:30-19:05",
@@ -102,5 +94,13 @@
     "location": "",
     "notes": "",
     "created_at": "2026-04-10T15:15:47"
+  },
+  {
+    "program": "충북 시사토론 창",
+    "recording_date": "2026-05-06",
+    "recording_time": "10:30-11:40",
+    "location": "4층 뉴스룸",
+    "notes": "담당PD 설경철; 녹화내용: 자립준비청년; 패널 4명 출연 (좌2, 우2)",
+    "created_at": "2026-04-15T14:40:48"
   }
 ]
